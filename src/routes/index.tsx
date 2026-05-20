@@ -54,10 +54,10 @@ function Index() {
                 </button>
                 <div className="hidden items-center rounded-full bg-white/15 px-1.5 py-1 backdrop-blur-md ring-1 ring-white/25 md:flex">
                   {[
-                    { label: "Buyers", to: "/properties" },
-                    { label: "Sellers", to: "/contact" },
-                    { label: "About Us", to: "/about" },
-                    { label: "Contact Us", to: "/contact" },
+                    { label: "Villas", to: "/properties" },
+                    { label: "Apartments", to: "/properties" },
+                    { label: "Land", to: "/properties" },
+                    { label: "Contact", to: "/contact" },
                   ].map((n) => (
                     <Link
                       key={n.label}
@@ -84,7 +84,7 @@ function Index() {
                       </svg>
                     </span>
                     <span className="font-display text-lg leading-none tracking-tight text-foreground">
-                      Find Home
+                      Offshore
                     </span>
                   </div>
                 </div>
@@ -95,7 +95,7 @@ function Index() {
                 <div className="hidden h-11 items-center gap-2 rounded-full bg-white/20 pl-5 pr-2 text-white backdrop-blur-md ring-1 ring-white/30 lg:flex">
                   <input
                     type="text"
-                    placeholder="Search by Address, City, or Neighborhood"
+                    placeholder="Describe your ideal coastline, view, or budget…"
                     className="w-72 bg-transparent text-xs text-white placeholder:text-white/80 focus:outline-none"
                   />
                   <button
@@ -123,14 +123,27 @@ function Index() {
 
           {/* Bottom-left headline */}
           <div className="absolute bottom-0 left-0 right-0 z-10 px-6 pb-10 sm:px-12 sm:pb-14">
-            <h1 className="font-sans text-6xl font-light leading-[0.95] tracking-tight text-white sm:text-7xl md:text-[7.5rem] lg:text-[9rem]">
-              DREAM HOME
+            <h1 className="font-display text-6xl font-light leading-[0.95] tracking-tight text-white sm:text-7xl md:text-[7.5rem] lg:text-[9rem]">
+              Offshore Properties
             </h1>
             <p className="mt-5 max-w-xl text-xs leading-relaxed text-white/85 sm:text-sm">
-              Offshore Properties curates exceptional villas, oceanfront apartments
-              and rare plots of land — represented with the care and discretion they
-              deserve.
+              A curated collection of villas, oceanfront apartments and rare plots
+              of land — represented with the care and discretion they deserve.
             </p>
+            <div className="mt-7 flex flex-wrap items-center gap-3">
+              <Link
+                to="/properties"
+                className="inline-flex h-11 items-center rounded-full bg-white px-6 text-xs font-medium uppercase tracking-[0.18em] text-foreground transition-smooth hover:bg-white/90"
+              >
+                Browse the collection
+              </Link>
+              <Link
+                to="/contact"
+                className="inline-flex h-11 items-center rounded-full bg-white/15 px-6 text-xs font-medium uppercase tracking-[0.18em] text-white backdrop-blur-md ring-1 ring-white/40 transition-smooth hover:bg-white/25"
+              >
+                Speak with an advisor
+              </Link>
+            </div>
           </div>
         </div>
       </section>
