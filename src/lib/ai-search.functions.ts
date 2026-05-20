@@ -68,7 +68,7 @@ export const aiSearch = createServerFn({ method: "POST" })
     }
     const reply = content.replace(/MATCHES:\s*\[[^\]]*\]/, "").trim();
 
-    let matches: Array<{ id: string; slug: string; title: string; hero_image: string | null; city: string | null; price: number; currency: string; listing_type: string }> = [];
+    let matches: Array<{ id: string; slug: string | null; title: string; hero_image: string | null; city: string | null; price: number; currency: string; listing_type: string }> = [];
     if (slugs.length) {
       const { data: m } = await supabaseAdmin
         .from("properties")

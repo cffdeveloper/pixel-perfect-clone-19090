@@ -63,7 +63,6 @@ export const recordPropertyView = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => z.object({ propertyId: z.string().uuid() }).parse(input))
   .handler(async ({ data }) => {
     await supabaseAdmin.from("property_views").insert({ property_id: data.propertyId });
-    await supabaseAdmin.rpc("increment_view", { _id: data.propertyId }).then(() => {}).catch(() => {});
     return { ok: true };
   });
 
