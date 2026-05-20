@@ -6,8 +6,8 @@ import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
 import { PropertyCard } from "@/components/property-card";
 import { listProperties } from "@/lib/properties.functions";
-import heroImg from "@/assets/hero-villa.jpg";
-import { ArrowRight } from "lucide-react";
+import heroImg from "@/assets/hero-anchor.jpg";
+import { ArrowRight, Star } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -32,26 +32,63 @@ function Index() {
     <div className="min-h-screen bg-background">
       <SiteHeader />
 
-      {/* Hero */}
-      <section className="relative h-[92vh] min-h-[600px] w-full overflow-hidden">
-        <img src={heroImg} alt="Oceanfront villa at sunset" className="absolute inset-0 h-full w-full object-cover" />
-        <div className="absolute inset-0 bg-gradient-hero" />
-        <div className="relative z-10 mx-auto flex h-full max-w-7xl flex-col justify-end px-6 pb-24">
-          <div className="max-w-2xl text-background">
-            <div className="mb-6 text-xs uppercase tracking-[0.3em] text-brass">Curated Coastal Real Estate</div>
-            <h1 className="font-display text-5xl leading-[1.05] text-balance md:text-7xl">
-              A perspective worth waking up to.
+      {/* Hero — Anchor Homes style */}
+      <section className="relative w-full overflow-hidden bg-[oklch(0.96_0.025_85)]">
+        <img
+          src={heroImg}
+          alt="Modern cantilevered home at golden hour"
+          className="absolute inset-y-0 right-0 h-full w-full object-cover md:w-[68%]"
+          fetchPriority="high"
+        />
+        {/* Cream wash for the left readable column */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[oklch(0.96_0.025_85)] via-[oklch(0.96_0.025_85)]/85 to-transparent md:via-[oklch(0.96_0.025_85)]/40 md:to-transparent" />
+
+        <div className="relative z-10 mx-auto flex min-h-[88vh] max-w-7xl flex-col justify-between px-6 pt-16 pb-10 md:pt-24 md:pb-12">
+          <div className="max-w-3xl">
+            <h1 className="font-sans text-5xl font-black uppercase leading-[0.95] tracking-tight text-foreground md:text-7xl lg:text-[5.5rem]">
+              Find your perfect<br />place to call home
             </h1>
-            <p className="mt-6 max-w-lg text-lg text-background/80">
-              Handpicked villas, oceanfront apartments, and rare plots of land — represented with the care they deserve.
-            </p>
-            <div className="mt-10 flex flex-wrap gap-4">
-              <Link to="/properties" className="inline-flex items-center gap-2 rounded-sm bg-brass px-7 py-3.5 text-sm uppercase tracking-wide text-primary-foreground transition-smooth hover:bg-brass/90">
-                Explore listings <ArrowRight className="h-4 w-4" />
-              </Link>
-              <Link to="/contact" className="inline-flex items-center gap-2 rounded-sm border border-background/60 px-7 py-3.5 text-sm uppercase tracking-wide text-background transition-smooth hover:bg-background/10">
-                Speak with us
-              </Link>
+            <Link
+              to="/properties"
+              className="mt-10 inline-flex items-center gap-3 bg-foreground px-8 py-4 text-sm font-medium text-background transition-smooth hover:bg-foreground/85"
+            >
+              Book a Call <ArrowRight className="h-4 w-4" />
+            </Link>
+          </div>
+
+          {/* Tagline floating right */}
+          <div className="pointer-events-none absolute right-6 top-[42%] hidden max-w-[18rem] text-right text-sm leading-relaxed text-background md:block">
+            Secure, stylish and smart homes<br />— crafted to give you comfort,<br />trust, and a better life
+          </div>
+
+          {/* Stats bar */}
+          <div className="mt-16 grid gap-6 md:grid-cols-[auto_1fr] md:items-end md:gap-12">
+            <div className="bg-background p-8 shadow-card md:max-w-xs">
+              <div className="flex items-baseline gap-2">
+                <span className="font-sans text-5xl font-bold tracking-tight text-foreground">4.5</span>
+                <Star className="h-5 w-5 fill-foreground text-foreground" />
+              </div>
+              <p className="mt-3 text-sm leading-snug text-muted-foreground">
+                Excellence backed<br />by real client feedback
+              </p>
+            </div>
+
+            <div className="grid grid-cols-3 gap-6 text-background md:gap-12">
+              <div className="col-span-3 -mb-2 text-xs uppercase tracking-[0.25em] text-background/90 md:col-span-3">
+                Impact in numbers
+              </div>
+              <div>
+                <div className="text-3xl font-bold md:text-4xl">120+</div>
+                <div className="mt-1 text-[11px] uppercase tracking-wider text-background/85">Completed<br />Projects</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold md:text-4xl">94%</div>
+                <div className="mt-1 text-[11px] uppercase tracking-wider text-background/85">Client<br />Satisfaction</div>
+              </div>
+              <div>
+                <div className="text-3xl font-bold md:text-4xl">64+</div>
+                <div className="mt-1 text-[11px] uppercase tracking-wider text-background/85">Years of<br />Expertise</div>
+              </div>
             </div>
           </div>
         </div>
