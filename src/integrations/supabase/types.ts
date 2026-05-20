@@ -14,16 +14,401 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      agents: {
+        Row: {
+          agency: string | null
+          bio: string | null
+          created_at: string
+          email: string
+          id: string
+          is_active: boolean
+          name: string
+          phone: string | null
+          photo_url: string | null
+          updated_at: string
+          user_id: string | null
+          whatsapp: string | null
+        }
+        Insert: {
+          agency?: string | null
+          bio?: string | null
+          created_at?: string
+          email: string
+          id?: string
+          is_active?: boolean
+          name: string
+          phone?: string | null
+          photo_url?: string | null
+          updated_at?: string
+          user_id?: string | null
+          whatsapp?: string | null
+        }
+        Update: {
+          agency?: string | null
+          bio?: string | null
+          created_at?: string
+          email?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          phone?: string | null
+          photo_url?: string | null
+          updated_at?: string
+          user_id?: string | null
+          whatsapp?: string | null
+        }
+        Relationships: []
+      }
+      bookings: {
+        Row: {
+          agent_id: string | null
+          client_email: string
+          client_name: string
+          client_phone: string | null
+          created_at: string
+          duration_minutes: number
+          google_event_id: string | null
+          id: string
+          lead_id: string | null
+          notes: string | null
+          property_id: string | null
+          requested_at: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          agent_id?: string | null
+          client_email: string
+          client_name: string
+          client_phone?: string | null
+          created_at?: string
+          duration_minutes?: number
+          google_event_id?: string | null
+          id?: string
+          lead_id?: string | null
+          notes?: string | null
+          property_id?: string | null
+          requested_at: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string | null
+          client_email?: string
+          client_name?: string
+          client_phone?: string | null
+          created_at?: string
+          duration_minutes?: number
+          google_event_id?: string | null
+          id?: string
+          lead_id?: string | null
+          notes?: string | null
+          property_id?: string | null
+          requested_at?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bookings_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_lead_id_fkey"
+            columns: ["lead_id"]
+            isOneToOne: false
+            referencedRelation: "leads"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "bookings_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      email_logs: {
+        Row: {
+          created_at: string
+          error: string | null
+          id: string
+          related_id: string | null
+          related_type: string | null
+          resend_message_id: string | null
+          status: string
+          template: string
+          to_email: string
+        }
+        Insert: {
+          created_at?: string
+          error?: string | null
+          id?: string
+          related_id?: string | null
+          related_type?: string | null
+          resend_message_id?: string | null
+          status?: string
+          template: string
+          to_email: string
+        }
+        Update: {
+          created_at?: string
+          error?: string | null
+          id?: string
+          related_id?: string | null
+          related_type?: string | null
+          resend_message_id?: string | null
+          status?: string
+          template?: string
+          to_email?: string
+        }
+        Relationships: []
+      }
+      leads: {
+        Row: {
+          agent_id: string | null
+          client_email: string
+          client_name: string
+          client_phone: string | null
+          created_at: string
+          id: string
+          message: string | null
+          notes: string | null
+          property_id: string | null
+          source: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          agent_id?: string | null
+          client_email: string
+          client_name: string
+          client_phone?: string | null
+          created_at?: string
+          id?: string
+          message?: string | null
+          notes?: string | null
+          property_id?: string | null
+          source?: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string | null
+          client_email?: string
+          client_name?: string
+          client_phone?: string | null
+          created_at?: string
+          id?: string
+          message?: string | null
+          notes?: string | null
+          property_id?: string | null
+          source?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "leads_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "leads_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      properties: {
+        Row: {
+          address: string | null
+          agent_id: string | null
+          area_sqm: number | null
+          available_from: string | null
+          bathrooms: number | null
+          bedrooms: number | null
+          city: string | null
+          country: string | null
+          created_at: string
+          currency: string
+          description: string | null
+          features: string[]
+          furnishing_status: string | null
+          hero_image: string | null
+          id: string
+          images: string[]
+          is_featured: boolean
+          is_published: boolean
+          latitude: number | null
+          listing_type: string
+          longitude: number | null
+          parking_spaces: number | null
+          plot_size_sqm: number | null
+          price: number
+          property_type: string
+          short_let_min_nights: number | null
+          slug: string | null
+          status: string
+          title: string
+          updated_at: string
+          view_count: number
+          year_built: number | null
+        }
+        Insert: {
+          address?: string | null
+          agent_id?: string | null
+          area_sqm?: number | null
+          available_from?: string | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          currency?: string
+          description?: string | null
+          features?: string[]
+          furnishing_status?: string | null
+          hero_image?: string | null
+          id?: string
+          images?: string[]
+          is_featured?: boolean
+          is_published?: boolean
+          latitude?: number | null
+          listing_type?: string
+          longitude?: number | null
+          parking_spaces?: number | null
+          plot_size_sqm?: number | null
+          price: number
+          property_type: string
+          short_let_min_nights?: number | null
+          slug?: string | null
+          status?: string
+          title: string
+          updated_at?: string
+          view_count?: number
+          year_built?: number | null
+        }
+        Update: {
+          address?: string | null
+          agent_id?: string | null
+          area_sqm?: number | null
+          available_from?: string | null
+          bathrooms?: number | null
+          bedrooms?: number | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          currency?: string
+          description?: string | null
+          features?: string[]
+          furnishing_status?: string | null
+          hero_image?: string | null
+          id?: string
+          images?: string[]
+          is_featured?: boolean
+          is_published?: boolean
+          latitude?: number | null
+          listing_type?: string
+          longitude?: number | null
+          parking_spaces?: number | null
+          plot_size_sqm?: number | null
+          price?: number
+          property_type?: string
+          short_let_min_nights?: number | null
+          slug?: string | null
+          status?: string
+          title?: string
+          updated_at?: string
+          view_count?: number
+          year_built?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "properties_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      property_views: {
+        Row: {
+          created_at: string
+          id: string
+          property_id: string
+          referrer: string | null
+          viewer_ip: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          property_id: string
+          referrer?: string | null
+          viewer_ip?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          property_id?: string
+          referrer?: string | null
+          viewer_ip?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "property_views_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "agent"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +535,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "agent"],
+    },
   },
 } as const
