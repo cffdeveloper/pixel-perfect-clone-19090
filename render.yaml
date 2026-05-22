@@ -1,0 +1,17 @@
+# Render Blueprint — https://offshoreproperties.onrender.com
+services:
+  - type: web
+    name: offshoreproperties
+    runtime: node
+    plan: free
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    healthCheckPath: /
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # Add the rest in the Render dashboard (same as .env.example):
+      # SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, SUPABASE_SERVICE_ROLE_KEY,
+      # VITE_SUPABASE_URL, VITE_SUPABASE_PUBLISHABLE_KEY, VITE_SUPABASE_PROJECT_ID,
+      # VITE_SITE_URL (https://offshoreproperties.onrender.com),
+      # ADMIN_PASSWORD, VITE_GOOGLE_MAPS_API_KEY, VITE_GOOGLE_MAP_ID, LOVABLE_API_KEY
