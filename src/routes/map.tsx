@@ -5,8 +5,8 @@ import { SiteLayout } from "@/components/site-layout";
 import { PropertiesMap } from "@/components/properties-map";
 import { listPropertiesForMap } from "@/lib/social.functions";
 import { BRAND } from "@/lib/constants";
-import { AiAssistant } from "@/components/ai-assistant";
-import { Map, Sparkles } from "lucide-react";
+import { AiSearchField } from "@/components/ai-search-field";
+import { Map } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/map")({
@@ -47,14 +47,7 @@ function MapPage() {
                 List view
               </Button>
             </Link>
-            <AiAssistant
-              trigger={
-                <Button className="gap-2 rounded-full bg-[#c6f135] text-[#0a0a0a] hover:bg-[#d4ff4a]">
-                  <Sparkles className="h-4 w-4" />
-                  AI search
-                </Button>
-              }
-            />
+            <AiSearchField variant="compact" className="w-full sm:max-w-xs" />
           </div>
         </div>
         <div className="mt-8">

@@ -31,3 +31,31 @@ export function propertyTypeLabel(t: string) {
 export function statusLabel(s: string) {
   return s.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
 }
+
+export function listingTypeShort(t: string) {
+  if (t === "sale") return "Sale";
+  if (t === "rent") return "Rent";
+  if (t === "short_let") return "Short let";
+  return t;
+}
+
+/** Compact area for cards (e.g. 121212 → 121k m²) */
+export function formatArea(sqm: number | null | undefined) {
+  if (sqm == null || Number.isNaN(Number(sqm))) return null;
+  const n = Number(sqm);
+  if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, "")}M m²`;
+  if (n >= 10_000) return `${Math.round(n / 1000)}k m²`;
+  if (n >= 1000) return `${(n / 1000).toFixed(1).replace(/\.0$/, "")}k m²`;
+  return `${n.toLocaleString()} m²`;
+}
+
+export function propertyLocationLine(p: {
+  address?: string | null;
+  city?: string | null;
+  country?: string | null;
+}) {
+  const cityCountry = [p.city, p.country].filter(Boolean).join(", ");
+  if (p.address && cityCountry) return `${p.address} · ${cityCountry}`;
+  if (p.address) return p.address;
+  return cityCountry || null;
+}

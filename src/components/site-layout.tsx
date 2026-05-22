@@ -1,17 +1,13 @@
 import { SiteHeader } from "@/components/site-header";
 import { SiteFooter } from "@/components/site-footer";
-import { AiAssistant } from "@/components/ai-assistant";
-
 export function SiteLayout({
   children,
   className = "",
   showFooter = true,
-  showAssistant = true,
 }: {
   children: React.ReactNode;
   className?: string;
   showFooter?: boolean;
-  showAssistant?: boolean;
 }) {
   return (
     <div className={`flex min-h-screen flex-col overflow-x-hidden bg-[#c8c8c8] ${className}`}>
@@ -20,7 +16,6 @@ export function SiteLayout({
         <main className="flex-1 overflow-x-hidden text-white">{children}</main>
         {showFooter && <SiteFooter />}
       </div>
-      {showAssistant && <AiAssistant />}
     </div>
   );
 }

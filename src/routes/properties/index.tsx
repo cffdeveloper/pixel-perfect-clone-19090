@@ -8,8 +8,8 @@ import { PropertyFilters, type PropertySearch } from "@/components/property-filt
 import { SectionHeading } from "@/components/section-heading";
 import { BRAND } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
-import { Map, Sparkles } from "lucide-react";
-import { AiAssistant } from "@/components/ai-assistant";
+import { Map } from "lucide-react";
+import { AiSearchField } from "@/components/ai-search-field";
 import { z } from "zod";
 
 const searchSchema = z.object({
@@ -94,13 +94,7 @@ function PropertiesPage() {
                 <Map className="h-4 w-4" /> View map
               </Button>
             </Link>
-            <AiAssistant
-              trigger={
-                <Button size="sm" className="gap-2 rounded-full bg-[#c6f135] text-[#0a0a0a] hover:bg-[#d4ff4a]">
-                  <Sparkles className="h-4 w-4" /> AI search
-                </Button>
-              }
-            />
+            <AiSearchField variant="compact" className="w-full sm:max-w-sm" />
           </div>
         </div>
       </section>
@@ -113,9 +107,9 @@ function PropertiesPage() {
           </p>
         )}
         {isLoading ? (
-          <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid gap-3 lg:grid-cols-2">
             {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="aspect-[4/3] animate-pulse rounded-2xl bg-white/5" />
+              <div key={i} className="h-[108px] animate-pulse rounded-xl bg-white/5 sm:h-[120px]" />
             ))}
           </div>
         ) : properties.length === 0 ? (
@@ -133,7 +127,7 @@ function PropertiesPage() {
         ) : (
           <>
             <p className="mt-6 text-sm text-white/50">{properties.length} properties</p>
-            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-6 grid gap-3 lg:grid-cols-2">
               {properties.map((p) => (
                 <PropertyCard key={p.id} p={p} />
               ))}

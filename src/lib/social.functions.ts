@@ -101,7 +101,7 @@ export const listSavedProperties = createServerFn({ method: "GET" })
     const { data: properties, error: pErr } = await supabaseAdmin
       .from("properties")
       .select(
-        "id, title, slug, property_type, listing_type, status, price, currency, bedrooms, bathrooms, area_sqm, city, country, hero_image, images, is_featured, latitude, longitude, created_at",
+        "id, title, slug, property_type, listing_type, status, price, currency, bedrooms, bathrooms, area_sqm, plot_size_sqm, address, city, country, description, features, hero_image, images, is_featured, latitude, longitude, created_at",
       )
       .in("id", ids)
       .eq("is_published", true);

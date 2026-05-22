@@ -1,8 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { HavenlySearch } from "@/components/home/havenly-search";
-import { AiAssistant } from "@/components/ai-assistant";
+import { AiSearchField } from "@/components/ai-search-field";
 import { PublicHeader, type HomeTab } from "@/components/public-header";
-import { Map, Sparkles } from "lucide-react";
+import { Map } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { HAVENLY_HERO_IMAGE } from "@/lib/constants";
 
@@ -32,7 +32,7 @@ export function HavenlyHero({
 
         <PublicHeader variant="overlay" homeTab={homeTab} onHomeTabChange={onHomeTabChange} />
 
-        <div className="relative z-10 mt-auto flex flex-1 flex-col justify-end px-4 pb-[280px] pt-4 sm:px-8 sm:pb-44 sm:pt-0 lg:px-10 lg:pb-48">
+        <div className="relative z-10 mt-auto flex flex-1 flex-col justify-end px-4 pb-[300px] pt-4 sm:px-8 sm:pb-[340px] sm:pt-0 lg:px-10 lg:pb-[360px]">
           <div className="max-w-2xl">
             <h1 className="text-[1.75rem] font-bold leading-[1.1] tracking-tight text-white sm:text-5xl md:text-6xl lg:text-[3.5rem]">
               {homeTab === "rent"
@@ -52,28 +52,18 @@ export function HavenlyHero({
         </div>
 
         <div className="absolute bottom-3 left-3 right-3 z-20 space-y-2.5 sm:bottom-8 sm:left-auto sm:right-8 sm:max-w-[720px] sm:space-y-3 lg:bottom-10 lg:right-10">
-          <div className="flex flex-wrap gap-2 sm:justify-end">
-            <Link to="/map" className="min-w-0 flex-1 sm:flex-none">
+          <AiSearchField variant="hero" />
+          <div className="flex justify-end">
+            <Link to="/map">
               <Button
                 variant="secondary"
                 size="sm"
-                className="h-11 w-full gap-2 rounded-full border-white/20 bg-black/40 text-white backdrop-blur hover:bg-black/60 sm:w-auto"
+                className="h-10 gap-2 rounded-full border-white/20 bg-black/40 px-4 text-white backdrop-blur hover:bg-black/60"
               >
                 <Map className="h-4 w-4 shrink-0" />
-                <span className="truncate">View map</span>
+                View map
               </Button>
             </Link>
-            <AiAssistant
-              trigger={
-                <Button
-                  size="sm"
-                  className="h-11 w-full gap-2 rounded-full bg-[#c6f135] text-[#0a0a0a] hover:bg-[#d4ff4a] sm:w-auto"
-                >
-                  <Sparkles className="h-4 w-4 shrink-0" />
-                  <span className="truncate">AI assistant</span>
-                </Button>
-              }
-            />
           </div>
           <HavenlySearch
             listingType={homeTab === "rent" ? "rent" : homeTab === "buy" ? "sale" : undefined}

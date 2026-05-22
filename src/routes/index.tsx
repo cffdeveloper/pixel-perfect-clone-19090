@@ -7,7 +7,6 @@ import { HomeTabStrip } from "@/components/home/home-tab-strip";
 import { PropertyCard } from "@/components/property-card";
 import { listProperties } from "@/lib/properties.functions";
 import { BRAND, HAVENLY_HERO_RENT, HAVENLY_HERO_SALE } from "@/lib/constants";
-import { AiAssistant } from "@/components/ai-assistant";
 import type { HomeTab } from "@/components/public-header";
 import { z } from "zod";
 
@@ -101,9 +100,9 @@ function Index() {
           </div>
 
           {isLoading ? (
-            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-6 grid gap-3 lg:grid-cols-2">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="aspect-[4/3] animate-pulse rounded-2xl bg-white/5" />
+                <div key={i} className="h-[108px] animate-pulse rounded-xl bg-white/5 sm:h-[120px]" />
               ))}
             </div>
           ) : listings.length === 0 ? (
@@ -113,7 +112,7 @@ function Index() {
                 : `No ${homeTab === "buy" ? "sale" : "rent"} listings — try All or the other tab.`}
             </p>
           ) : (
-            <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-6 grid gap-3 lg:grid-cols-2">
               {listings.map((p) => (
                 <PropertyCard
                   key={p.id}
@@ -125,7 +124,6 @@ function Index() {
         </div>
       </section>
 
-      <AiAssistant />
     </div>
   );
 }
