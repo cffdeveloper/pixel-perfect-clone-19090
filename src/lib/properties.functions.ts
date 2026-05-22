@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
-import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireAdminAuth } from "@/integrations/supabase/admin-middleware";
 
 const FilterSchema = z.object({
   query: z.string().max(200).optional(),
@@ -105,18 +105,18 @@ export const createBooking = createServerFn({ method: "POST" })
 
 // Admin-only: list everything including drafts
 export const adminListProperties = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAdminAuth])
   .handler(async () => {
     const { data, error } = await supabaseAdmin
       .from("properties")
-      .select("id, title, slug, property_type, listing_type, status, price, currency, city, hero_image, is_published, is_featured, view_count, created_at")
+      .select("id, title, slug, property_type, listing_type, status, price, currency, city, hero_image, is_published, is_featured, view_count, latitude, longitude, created_at")
       .order("created_at", { ascending: false });
     if (error) throw error;
     return data ?? [];
   });
 
 export const adminGetProperty = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAdminAuth])
   .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data }) => {
     const { data: row, error } = await supabaseAdmin
@@ -149,15 +149,15 @@ const PropertyInputSchema = z.object({
   longitude: z.number().min(-180).max(180).nullable().optional(),
   description: z.string().max(8000).nullable().optional(),
   features: z.array(z.string().max(60)).max(50).default([]),
-  images: z.array(z.string().url()).max(40).default([]),
-  hero_image: z.string().url().nullable().optional(),
+  images: z.array(z.string().max(2000)).max(40).default([]),
+  hero_image: z.string().max(2000).nullable().optional(),
   is_published: z.boolean().default(false),
   is_featured: z.boolean().default(false),
   agent_id: z.string().uuid().nullable().optional(),
 });
 
 export const upsertProperty = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAdminAuth])
   .inputValidator((input: unknown) => PropertyInputSchema.parse(input))
   .handler(async ({ data }) => {
     const { error, data: row } = await supabaseAdmin
@@ -167,7 +167,7 @@ export const upsertProperty = createServerFn({ method: "POST" })
   });
 
 export const deleteProperty = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAdminAuth])
   .inputValidator((input: unknown) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data }) => {
     const { error } = await supabaseAdmin.from("properties").delete().eq("id", data.id);
@@ -175,8 +175,24 @@ export const deleteProperty = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const setPropertyPublished = createServerFn({ method: "POST" })
+  .middleware([requireAdminAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ id: z.string().uuid(), is_published: z.boolean() }).parse(input),
+  )
+  .handler(async ({ data }) => {
+    const { data: row, error } = await supabaseAdmin
+      .from("properties")
+      .update({ is_published: data.is_published })
+      .eq("id", data.id)
+      .select("id, slug, is_published")
+      .single();
+    if (error) throw error;
+    return row;
+  });
+
 export const adminListLeads = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAdminAuth])
   .handler(async () => {
     const { data, error } = await supabaseAdmin
       .from("leads")
@@ -187,7 +203,7 @@ export const adminListLeads = createServerFn({ method: "GET" })
   });
 
 export const adminUpdateLead = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAdminAuth])
   .inputValidator((input: unknown) =>
     z.object({
       id: z.string().uuid(),
@@ -202,7 +218,7 @@ export const adminUpdateLead = createServerFn({ method: "POST" })
   });
 
 export const adminListBookings = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAdminAuth])
   .handler(async () => {
     const { data, error } = await supabaseAdmin
       .from("bookings")
@@ -213,7 +229,7 @@ export const adminListBookings = createServerFn({ method: "GET" })
   });
 
 export const adminUpdateBooking = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAdminAuth])
   .inputValidator((input: unknown) =>
     z.object({
       id: z.string().uuid(),
@@ -226,7 +242,7 @@ export const adminUpdateBooking = createServerFn({ method: "POST" })
   });
 
 export const adminStats = createServerFn({ method: "GET" })
-  .middleware([requireSupabaseAuth])
+  .middleware([requireAdminAuth])
   .handler(async () => {
     const [p, l, b, v] = await Promise.all([
       supabaseAdmin.from("properties").select("id, is_published, view_count"),

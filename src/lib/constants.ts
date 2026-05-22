@@ -1,0 +1,43 @@
+export const BRAND = {
+  name: "Offshore Properties",
+  tagline: "Curated coastal real estate",
+  email: "hello@offshoreproperties.com",
+  phone: "+1 (555) 010-0000",
+} as const;
+
+export const HERO_IMAGE =
+  "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1920&q=85";
+
+/** Havenly-style homepage — modern angular architecture */
+export const HAVENLY_HERO_IMAGE =
+  "https://images.unsplash.com/photo-1600607687644-c7171b42498f?auto=format&fit=crop&w=1920&q=85";
+
+export const HAVENLY_HERO_SALE =
+  "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?auto=format&fit=crop&w=1920&q=85";
+
+export const HAVENLY_HERO_RENT =
+  "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&w=1920&q=85";
+
+export const NAV = [
+  { to: "/", label: "Home", exact: true },
+  { to: "/properties", label: "Collection" },
+  { to: "/map", label: "Map" },
+  { to: "/about", label: "About" },
+  { to: "/contact", label: "Contact" },
+] as const;
+
+export const PROPERTY_TYPES = [
+  { value: "any", label: "All types" },
+  { value: "villa", label: "Villas" },
+  { value: "apartment", label: "Apartments" },
+  { value: "townhouse", label: "Townhouses" },
+  { value: "land", label: "Land" },
+  { value: "commercial", label: "Commercial" },
+] as const;
+
+export const LISTING_TYPES = [
+  { value: "any", label: "Any" },
+  { value: "sale", label: "For sale" },
+  { value: "rent", label: "For rent" },
+  { value: "short_let", label: "Short let" },
+] as const;

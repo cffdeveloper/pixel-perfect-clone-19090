@@ -7,27 +7,24 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-
+import { Toaster } from "@/components/ui/sonner";
+import { BRAND } from "@/lib/constants";
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-7xl font-bold text-foreground">404</h1>
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
-        <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
-        </p>
-        <div className="mt-6">
-          <Link
-            to="/"
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Go home
-          </Link>
-        </div>
-      </div>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#0a0a0a] px-4 text-white">
+      <p className="text-xs uppercase tracking-[0.28em] text-[#c6f135]">404</p>
+      <h1 className="mt-4 text-5xl font-bold">Page not found</h1>
+      <p className="mt-3 max-w-sm text-center text-sm text-white/50">
+        The page you&apos;re looking for doesn&apos;t exist or has been moved.
+      </p>
+      <Link
+        to="/"
+        className="mt-8 inline-flex h-11 items-center rounded-full bg-[#c6f135] px-8 text-xs font-semibold uppercase tracking-wider text-[#0a0a0a] hover:bg-[#d4ff4a]"
+      >
+        Return home
+      </Link>
     </div>
   );
 }
@@ -37,31 +34,27 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   const router = useRouter();
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background px-4">
-      <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">
-          This page didn't load
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
-        </p>
-        <div className="mt-6 flex flex-wrap justify-center gap-2">
-          <button
-            onClick={() => {
-              router.invalidate();
-              reset();
-            }}
-            className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-          >
-            Try again
-          </button>
-          <a
-            href="/"
-            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
-          >
-            Go home
-          </a>
-        </div>
+    <div className="flex min-h-screen flex-col items-center justify-center bg-[#0a0a0a] px-4 text-white">
+      <h1 className="text-3xl font-bold">Something went wrong</h1>
+      <p className="mt-3 max-w-sm text-center text-sm text-white/50">
+        We couldn&apos;t load this page. Please try again or return to the homepage.
+      </p>
+      <div className="mt-8 flex flex-wrap justify-center gap-3">
+        <button
+          onClick={() => {
+            router.invalidate();
+            reset();
+          }}
+          className="inline-flex h-11 items-center rounded-full bg-[#c6f135] px-6 text-xs font-semibold uppercase tracking-wider text-[#0a0a0a]"
+        >
+          Try again
+        </button>
+        <Link
+          to="/"
+          className="inline-flex h-11 items-center rounded-full border border-white/20 px-6 text-xs uppercase tracking-wider text-white"
+        >
+          Go home
+        </Link>
       </div>
     </div>
   );
@@ -71,26 +64,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Builds a premium property listing platform with AI search and booking capabilities." },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Builds a premium property listing platform with AI search and booking capabilities." },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
+      { title: BRAND.name },
+      { name: "description", content: BRAND.tagline },
+      { property: "og:title", content: BRAND.name },
+      { property: "og:description", content: BRAND.tagline },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Lovable App" },
-      { name: "twitter:description", content: "Builds a premium property listing platform with AI search and booking capabilities." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/aee64bb4-cf94-48de-a2ea-cc0890ac79d0/id-preview-3fbe1413--990a0d91-6961-496d-9cef-d5f05a194a06.lovable.app-1779299977525.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/aee64bb4-cf94-48de-a2ea-cc0890ac79d0/id-preview-3fbe1413--990a0d91-6961-496d-9cef-d5f05a194a06.lovable.app-1779299977525.png" },
+      { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [
-      {
-        rel: "stylesheet",
-        href: appCss,
-      },
-    ],
+    links: [{ rel: "stylesheet", href: appCss }],
   }),
   shellComponent: RootShell,
   component: RootComponent,
@@ -118,6 +100,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <Outlet />
+      <Toaster position="top-center" richColors closeButton />
     </QueryClientProvider>
   );
 }

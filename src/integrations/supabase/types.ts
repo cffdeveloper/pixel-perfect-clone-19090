@@ -373,6 +373,21 @@ export type Database = {
           },
         ]
       }
+      oauth_admin_emails: {
+        Row: {
+          created_at: string
+          email: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -404,6 +419,10 @@ export type Database = {
           _role: Database["public"]["Enums"]["app_role"]
           _user_id: string
         }
+        Returns: boolean
+      }
+      is_oauth_admin_email: {
+        Args: { _email: string }
         Returns: boolean
       }
     }
