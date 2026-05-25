@@ -77,19 +77,19 @@ function PropertiesPage() {
 
   return (
     <SiteLayout>
-      <section className="border-b border-white/10 px-3 py-8 sm:px-6 sm:py-14">
+      <section className="border-b border-white/10 px-4 py-6 sm:px-6 sm:py-14">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
           <SectionHeading
             eyebrow="The collection"
             title="Coastal properties"
             description="Every listing is vetted for location, craft, and long-term value."
           />
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <Link to="/map">
               <Button
                 variant="outline"
                 size="sm"
-                className="gap-2 rounded-full border-white/15 text-white hover:bg-white/10"
+                className="h-11 gap-2 rounded-full border-white/15 text-white hover:bg-white/10"
               >
                 <Map className="h-4 w-4" /> View map
               </Button>
@@ -99,7 +99,7 @@ function PropertiesPage() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-3 py-8 safe-bottom sm:px-6 sm:py-14">
+      <section className="mx-auto max-w-7xl px-4 py-6 safe-bottom sm:px-6 sm:py-14">
         <PropertyFilters values={values} onChange={setSearch} onReset={reset} />
         {search.ai && search.q && (
           <p className="mt-4 text-sm text-white/50">
@@ -113,13 +113,13 @@ function PropertiesPage() {
             ))}
           </div>
         ) : properties.length === 0 ? (
-          <div className="mt-16 rounded-2xl border border-dashed border-white/15 p-16 text-center">
-            <p className="text-2xl font-bold text-white">No matches found</p>
+          <div className="mt-10 rounded-2xl border border-dashed border-white/15 px-4 py-10 text-center sm:mt-16 sm:p-16">
+            <p className="text-xl font-bold text-white sm:text-2xl">No matches found</p>
             <p className="mt-2 text-sm text-white/50">Adjust filters or explore all listings.</p>
             <Link
               to="/properties"
               search={{}}
-              className="mt-6 inline-block text-sm uppercase tracking-wider text-[#c6f135]"
+              className="mt-5 inline-flex min-h-[44px] items-center text-sm uppercase tracking-wider text-[#c6f135]"
             >
               Clear filters
             </Link>

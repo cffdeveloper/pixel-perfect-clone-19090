@@ -39,6 +39,11 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
       <p className="mt-3 max-w-sm text-center text-sm text-white/50">
         We couldn&apos;t load this page. Please try again or return to the homepage.
       </p>
+      {error?.message && (
+        <p className="mt-4 max-w-md rounded-lg border border-white/10 bg-white/5 px-4 py-3 text-center text-xs text-white/60">
+          {error.message}
+        </p>
+      )}
       <div className="mt-8 flex flex-wrap justify-center gap-3">
         <button
           onClick={() => {

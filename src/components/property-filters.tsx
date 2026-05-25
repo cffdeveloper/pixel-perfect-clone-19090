@@ -30,7 +30,7 @@ export function PropertyFilters({
   onReset: () => void;
 }) {
   return (
-    <div className="grid gap-4 rounded-2xl border border-white/10 bg-[#141414] p-4 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-6">
+    <div className="grid gap-3 rounded-2xl border border-white/10 bg-[#141414] p-3 sm:grid-cols-2 sm:gap-4 sm:p-4 lg:grid-cols-4 xl:grid-cols-6">
       <div className="space-y-1.5 sm:col-span-2">
         <Label className="text-xs uppercase tracking-wider text-white/50">Search</Label>
         <Input
@@ -83,7 +83,7 @@ export function PropertyFilters({
         <Button
           type="button"
           variant="outline"
-          className="w-full rounded-full border-white/15 text-white hover:bg-white/10"
+          className="h-11 w-full rounded-full border-white/15 text-white hover:bg-white/10"
           onClick={onReset}
         >
           Reset

@@ -29,32 +29,34 @@ function MapPage() {
 
   return (
     <SiteLayout>
-      <section className="mx-auto max-w-7xl px-3 py-8 safe-bottom sm:px-6 sm:py-14">
+      <section className="mx-auto max-w-7xl px-4 py-6 safe-bottom sm:px-6 sm:py-14">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-medium uppercase tracking-widest text-[#c6f135]">Explore</p>
-            <h1 className="mt-2 flex items-center gap-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              <Map className="h-8 w-8" />
+            <h1 className="mt-2 flex items-center gap-2 text-2xl font-bold tracking-tight text-white sm:text-4xl">
+              <Map className="h-6 w-6 sm:h-8 sm:w-8" />
               Property map
             </h1>
             <p className="mt-2 max-w-lg text-sm text-white/50">
-              Every pin is a published listing. Colors indicate property type — tap a pin for details.
+              Every pin is a published listing. Tap a pin for details.
             </p>
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
             <Link to="/properties">
-              <Button variant="outline" className="rounded-full border-white/15 text-white hover:bg-white/10">
+              <Button variant="outline" className="h-11 w-full rounded-full border-white/15 text-white hover:bg-white/10 sm:w-auto">
                 List view
               </Button>
             </Link>
             <AiSearchField variant="compact" className="w-full sm:max-w-xs" />
           </div>
         </div>
-        <div className="mt-8">
+        <div className="mt-6 sm:mt-8">
           {isLoading ? (
-            <div className="h-[480px] animate-pulse rounded-2xl bg-white/5" />
+            <div className="h-[60vh] max-h-[480px] min-h-[280px] animate-pulse rounded-2xl bg-white/5" />
           ) : (
-            <PropertiesMap properties={properties} />
+            <div className="h-[60vh] max-h-[600px] min-h-[280px] overflow-hidden rounded-2xl">
+              <PropertiesMap properties={properties} />
+            </div>
           )}
         </div>
       </section>

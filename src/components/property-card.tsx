@@ -41,8 +41,7 @@ export type PropertyCardData = {
 };
 
 function cardImage(p: PropertyCardData) {
-  const raw = p.hero_image || p.images?.find((u) => u && !u.includes(",")) || "";
-  return raw;
+  return p.hero_image || p.images?.find((u) => u && !u.includes(",")) || "";
 }
 
 function statusTone(status: string) {
@@ -51,16 +50,15 @@ function statusTone(status: string) {
   return "bg-white/10 text-white/55";
 }
 
-export function PropertyCard({ p }: { p: PropertyCardData; variant?: "light" | "dark" }) {
+export function PropertyCard({ p }: { p: PropertyCardData }) {
   const img = cardImage(p);
   const location = propertyLocationLine(p);
   const area = formatArea(p.area_sqm);
   const plot = formatArea(p.plot_size_sqm);
   const isLand = p.property_type === "land";
-  const features = (p.features ?? []).filter(Boolean).slice(0, 4);
+  const features = (p.features ?? []).filter(Boolean).slice(0, 3);
   const extraFeatures = (p.features?.length ?? 0) - features.length;
   const status = p.status ?? "available";
-  const desc = p.description?.trim();
 
   type Stat = "bed" | "bath" | "area" | "plot";
   const stats: { kind: Stat; label: string }[] = [];
@@ -70,7 +68,7 @@ export function PropertyCard({ p }: { p: PropertyCardData; variant?: "light" | "
   if (plot && plot !== area) stats.push({ kind: "plot", label: plot });
 
   function StatIcon({ kind }: { kind: Stat }) {
-    const cls = "h-3 w-3";
+    const cls = "h-3.5 w-3.5";
     if (kind === "bed") return <Bed className={cls} />;
     if (kind === "bath") return <Bath className={cls} />;
     if (kind === "plot") return <LandPlot className={cls} />;
@@ -81,9 +79,10 @@ export function PropertyCard({ p }: { p: PropertyCardData; variant?: "light" | "
     <Link
       to="/properties/$slug"
       params={{ slug: p.slug ?? p.id }}
-      className="group flex overflow-hidden rounded-xl bg-[#141414] ring-1 ring-white/10 transition hover:ring-[#c6f135]/45"
+      className="group flex overflow-hidden rounded-xl bg-[#141414] ring-1 ring-white/10 transition active:ring-[#c6f135]/40 sm:hover:ring-[#c6f135]/45"
     >
-      <div className="relative h-[108px] w-[108px] shrink-0 bg-[#1c1c1c] sm:h-[120px] sm:w-[128px]">
+      {/* Thumbnail */}
+      <div className="relative h-auto w-24 shrink-0 bg-[#1c1c1c] sm:w-[128px]">
         {img ? (
           <img
             src={img}
@@ -92,7 +91,7 @@ export function PropertyCard({ p }: { p: PropertyCardData; variant?: "light" | "
             className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
           />
         ) : (
-          <div className="flex h-full w-full items-center justify-center text-[10px] text-white/35">
+          <div className="flex h-full w-full items-center justify-center text-[11px] text-white/35">
             No image
           </div>
         )}
@@ -103,18 +102,20 @@ export function PropertyCard({ p }: { p: PropertyCardData; variant?: "light" | "
         )}
       </div>
 
-      <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 px-3 py-2.5 sm:gap-1.5 sm:px-3.5 sm:py-3">
+      {/* Details */}
+      <div className="flex min-w-0 flex-1 flex-col justify-center gap-1 px-3 py-2.5 sm:gap-1.5 sm:px-4 sm:py-3">
+        {/* Badges */}
         <div className="flex flex-wrap items-center gap-1">
-          <span className="rounded bg-white/10 px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wide text-white/80">
+          <span className="rounded bg-white/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white/80 sm:text-[11px]">
             {propertyTypeLabel(p.property_type)}
           </span>
-          <span className="rounded bg-white/5 px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wide text-white/55">
+          <span className="rounded bg-white/5 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide text-white/55 sm:text-[11px]">
             {listingTypeShort(p.listing_type)}
           </span>
           {status !== "available" && (
             <span
               className={cn(
-                "rounded px-1.5 py-0.5 text-[9px] font-medium uppercase tracking-wide",
+                "rounded px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wide sm:text-[11px]",
                 statusTone(status),
               )}
             >
@@ -123,23 +124,26 @@ export function PropertyCard({ p }: { p: PropertyCardData; variant?: "light" | "
           )}
         </div>
 
-        <h3 className="line-clamp-1 text-sm font-semibold leading-snug text-white sm:text-[15px]">
+        {/* Title */}
+        <h3 className="line-clamp-1 text-[13px] font-semibold leading-snug text-white sm:text-[15px]">
           {p.title}
         </h3>
 
+        {/* Location */}
         {location && (
-          <p className="flex items-start gap-1 text-[11px] leading-tight text-white/45">
+          <p className="flex items-start gap-1 text-[11px] leading-tight text-white/45 sm:text-xs">
             <MapPin className="mt-0.5 h-3 w-3 shrink-0" aria-hidden />
             <span className="line-clamp-1">{location}</span>
           </p>
         )}
 
-        <div className="flex flex-wrap items-baseline justify-between gap-x-2 gap-y-0.5">
-          <p className="text-base font-bold leading-none text-[#c6f135] sm:text-lg">
+        {/* Price + stats */}
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+          <p className="text-[15px] font-bold leading-none text-[#c6f135] sm:text-lg">
             {formatPrice(Number(p.price), p.currency, p.listing_type)}
           </p>
           {stats.length > 0 && (
-            <ul className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[10px] text-white/45">
+            <ul className="flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] text-white/45 sm:text-xs">
               {stats.map((s) => (
                 <li key={s.label} className="flex items-center gap-0.5">
                   <StatIcon kind={s.kind} />
@@ -150,26 +154,23 @@ export function PropertyCard({ p }: { p: PropertyCardData; variant?: "light" | "
           )}
         </div>
 
+        {/* Feature tags — hidden on smallest screens to save space */}
         {features.length > 0 && (
-          <ul className="flex flex-wrap gap-1">
+          <ul className="hidden flex-wrap gap-1 min-[400px]:flex">
             {features.map((f) => (
               <li
                 key={f}
-                className="rounded bg-white/5 px-1.5 py-0.5 text-[9px] text-white/55"
+                className="rounded bg-white/5 px-1.5 py-0.5 text-[10px] text-white/55 sm:text-[11px]"
               >
                 {f}
               </li>
             ))}
             {extraFeatures > 0 && (
-              <li className="rounded bg-white/5 px-1.5 py-0.5 text-[9px] text-white/40">
+              <li className="rounded bg-white/5 px-1.5 py-0.5 text-[10px] text-white/40 sm:text-[11px]">
                 +{extraFeatures}
               </li>
             )}
           </ul>
-        )}
-
-        {desc && (
-          <p className="line-clamp-2 text-[10px] leading-snug text-white/35">{desc}</p>
         )}
       </div>
     </Link>

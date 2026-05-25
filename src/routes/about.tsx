@@ -16,11 +16,11 @@ export const Route = createFileRoute("/about")({
 function AboutPage() {
   return (
     <SiteLayout>
-      <section className="relative mx-3 overflow-hidden rounded-[32px] sm:mx-4 md:mx-5 lg:mx-6">
-        <div className="relative flex min-h-[40vh] items-end">
+      <section className="relative mx-2 overflow-hidden rounded-[20px] sm:mx-4 sm:rounded-[32px] md:mx-5 lg:mx-6">
+        <div className="relative flex min-h-[35vh] items-end sm:min-h-[40vh]">
           <img src={HAVENLY_HERO_SALE} alt="" className="absolute inset-0 h-full w-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-black/40 to-black/20" />
-          <div className="relative w-full px-6 pb-12 pt-24 sm:px-10 sm:pb-16">
+          <div className="relative w-full px-4 pb-8 pt-20 sm:px-10 sm:pb-16 sm:pt-24">
             <SectionHeading
               eyebrow="Our story"
               title="Perspective over volume"
@@ -30,8 +30,8 @@ function AboutPage() {
         </div>
       </section>
 
-      <section className="page-panel mt-6">
-        <div className="mx-auto max-w-3xl space-y-6 text-base leading-relaxed text-white/60">
+      <section className="page-panel mt-4 sm:mt-6">
+        <div className="mx-auto max-w-3xl space-y-5 text-[15px] leading-relaxed text-white/60 sm:space-y-6 sm:text-base">
           <p>
             We represent a deliberately small portfolio of villas, apartments, and land along the
             world&apos;s most desirable coastlines. Each instruction is handled with discretion —
@@ -45,7 +45,7 @@ function AboutPage() {
         </div>
         <Link
           to="/contact"
-          className="mt-10 inline-flex h-11 items-center rounded-full bg-[#c6f135] px-8 text-xs font-semibold uppercase tracking-[0.16em] text-[#0a0a0a] transition hover:bg-[#d4ff4a]"
+          className="mt-8 inline-flex h-11 items-center rounded-full bg-[#c6f135] px-8 text-xs font-semibold uppercase tracking-[0.16em] text-[#0a0a0a] transition hover:bg-[#d4ff4a] sm:mt-10"
         >
           Speak with us
         </Link>

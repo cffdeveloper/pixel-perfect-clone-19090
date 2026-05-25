@@ -71,7 +71,7 @@ export function AiSearchField({
         onSubmit={handleSubmit}
         className={cn(
           "flex w-full items-center gap-2 overflow-hidden rounded-2xl bg-[#141414]/95 shadow-2xl ring-1 ring-white/10 backdrop-blur-md",
-          isHero ? "px-4 py-2.5 sm:rounded-full sm:py-2" : "rounded-full px-3 py-1.5",
+          isHero ? "px-3 py-2 sm:px-4 sm:py-2.5 sm:rounded-full" : "rounded-full px-3 py-2",
           className,
         )}
       >
@@ -86,7 +86,7 @@ export function AiSearchField({
           placeholder="Use AI to find your dream home…"
           className={cn(
             "min-w-0 flex-1 bg-transparent text-white placeholder:text-white/45 focus:outline-none",
-            isHero ? "text-sm sm:text-base" : "text-sm",
+            isHero ? "text-[15px] sm:text-base" : "text-[15px] sm:text-sm",
           )}
           aria-label="Describe your dream property"
         />
@@ -96,7 +96,7 @@ export function AiSearchField({
           disabled={loading || !input.trim()}
           className={cn(
             "shrink-0 rounded-full bg-[#c6f135] text-[#0a0a0a] hover:bg-[#d4ff4a] disabled:opacity-50",
-            isHero ? "h-10 w-10" : "h-9 w-9",
+            isHero ? "h-11 w-11 sm:h-10 sm:w-10" : "h-11 w-11 sm:h-9 sm:w-9",
           )}
           aria-label="Search with AI"
         >
@@ -159,7 +159,7 @@ export function AiSearchField({
                   to="/properties"
                   search={{ q: query, ai: "1" }}
                   onClick={() => setOpen(false)}
-                  className="block text-center text-sm font-medium text-[#c6f135] underline"
+                  className="block py-3 text-center text-sm font-medium text-[#c6f135] underline"
                 >
                   View all matching listings →
                 </Link>

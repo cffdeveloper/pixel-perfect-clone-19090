@@ -79,21 +79,21 @@ function Index() {
 
       <HomeTabStrip active={homeTab} onChange={setTab} />
 
-      <section className="px-2 pb-8 safe-bottom sm:px-4 md:px-5 lg:px-6 sm:pb-10">
-        <div className="mx-auto max-w-[1440px] rounded-[24px] bg-[#0a0a0a] px-4 py-8 sm:rounded-[40px] sm:px-8 sm:py-12 lg:rounded-[48px] lg:px-10">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <section className="px-1.5 pb-6 safe-bottom sm:px-4 sm:pb-10 md:px-5 lg:px-6">
+        <div className="mx-auto max-w-[1440px] rounded-[20px] bg-[#0a0a0a] px-4 py-6 sm:rounded-[40px] sm:px-8 sm:py-12 lg:rounded-[48px] lg:px-10">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-3">
             <div>
               <p className="text-xs font-medium uppercase tracking-widest text-[#c6f135]">
                 {listings.length} {listings.length === 1 ? "property" : "properties"}
               </p>
-              <h2 className="mt-1 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+              <h2 className="mt-1 text-xl font-bold tracking-tight text-white sm:text-3xl">
                 {sectionTitle}
               </h2>
             </div>
             <Link
               to="/properties"
               search={collectionSearch}
-              className="text-sm font-medium text-white/60 transition hover:text-[#c6f135]"
+              className="inline-flex min-h-[44px] items-center text-sm font-medium text-white/60 transition hover:text-[#c6f135]"
             >
               View full collection →
             </Link>

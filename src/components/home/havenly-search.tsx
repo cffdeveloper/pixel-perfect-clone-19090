@@ -17,7 +17,7 @@ const PRICE_OPTIONS = [
 export function HavenlySearch({ listingType }: { listingType?: "sale" | "rent" }) {
   const navigate = useNavigate();
   const [location, setLocation] = useState("");
-  const [propertyType, setPropertyType] = useState("apartment"); // Penthouse maps to apartment in DB
+  const [propertyType, setPropertyType] = useState("apartment");
   const [maxPrice, setMaxPrice] = useState("5000");
 
   function handleSearch(e: React.FormEvent) {
@@ -39,25 +39,25 @@ export function HavenlySearch({ listingType }: { listingType?: "sale" | "rent" }
       className="flex w-full flex-col gap-0 overflow-hidden rounded-2xl bg-[#141414] shadow-2xl sm:flex-row sm:items-stretch sm:rounded-full sm:pr-2"
     >
       <div className="flex flex-1 flex-col divide-y divide-white/10 sm:flex-row sm:divide-x sm:divide-y-0">
-        <label className="group flex flex-1 cursor-text flex-col px-5 py-4 sm:px-6 sm:py-3">
-          <span className="text-xs font-medium text-white/50">Location</span>
+        <label className="group flex flex-1 cursor-text flex-col px-4 py-3 sm:px-6 sm:py-3">
+          <span className="text-[11px] font-medium text-white/50 sm:text-xs">Location</span>
           <div className="mt-0.5 flex items-center justify-between gap-2">
             <input
               value={location}
               onChange={(e) => setLocation(e.target.value)}
               placeholder="Enter your location"
-              className="w-full bg-transparent text-sm text-white placeholder:text-white/40 focus:outline-none"
+              className="w-full bg-transparent text-white placeholder:text-white/40 focus:outline-none"
             />
           </div>
         </label>
 
-        <label className="relative flex flex-1 flex-col px-5 py-4 sm:px-6 sm:py-3">
-          <span className="text-xs font-medium text-white/50">Property type</span>
+        <label className="relative flex flex-1 flex-col px-4 py-3 sm:px-6 sm:py-3">
+          <span className="text-[11px] font-medium text-white/50 sm:text-xs">Property type</span>
           <div className="mt-0.5 flex items-center justify-between gap-2">
             <select
               value={propertyType}
               onChange={(e) => setPropertyType(e.target.value)}
-              className="w-full appearance-none bg-transparent text-sm text-white focus:outline-none"
+              className="w-full appearance-none bg-transparent text-white focus:outline-none"
             >
               <option value="apartment" className="bg-[#141414]">Penthouse</option>
               {PROPERTY_TYPES.filter((t) => t.value !== "any" && t.value !== "apartment").map((t) => (
@@ -70,13 +70,13 @@ export function HavenlySearch({ listingType }: { listingType?: "sale" | "rent" }
           </div>
         </label>
 
-        <label className="relative flex flex-1 flex-col px-5 py-4 sm:px-6 sm:py-3">
-          <span className="text-xs font-medium text-white/50">Max price</span>
+        <label className="relative flex flex-1 flex-col px-4 py-3 sm:px-6 sm:py-3">
+          <span className="text-[11px] font-medium text-white/50 sm:text-xs">Max price</span>
           <div className="mt-0.5 flex items-center justify-between gap-2">
             <select
               value={maxPrice}
               onChange={(e) => setMaxPrice(e.target.value)}
-              className="w-full appearance-none bg-transparent text-sm text-white focus:outline-none"
+              className="w-full appearance-none bg-transparent text-white focus:outline-none"
             >
               {PRICE_OPTIONS.map((p) => (
                 <option key={p.value} value={p.value} className="bg-[#141414]">
@@ -92,7 +92,7 @@ export function HavenlySearch({ listingType }: { listingType?: "sale" | "rent" }
       <button
         type="submit"
         aria-label="Search"
-        className="mx-3 mb-3 flex h-12 w-full items-center justify-center rounded-full bg-[#c6f135] text-[#0a0a0a] transition hover:bg-[#d4ff4a] sm:m-1.5 sm:h-11 sm:w-11 sm:shrink-0"
+        className="mx-3 mb-3 flex h-12 w-[calc(100%-1.5rem)] items-center justify-center rounded-full bg-[#c6f135] text-[#0a0a0a] transition hover:bg-[#d4ff4a] sm:m-1.5 sm:h-11 sm:w-11 sm:shrink-0"
       >
         <Search className="h-5 w-5" strokeWidth={2.5} />
       </button>
