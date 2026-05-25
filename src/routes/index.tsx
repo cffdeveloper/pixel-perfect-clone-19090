@@ -102,9 +102,9 @@ function Index() {
           </div>
 
           {isLoading ? (
-            <div className="mt-3 grid gap-2 sm:mt-6 sm:gap-3 lg:grid-cols-2">
+            <div className="mt-3 grid grid-cols-2 gap-2 sm:mt-6 sm:gap-3 lg:grid-cols-3">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="h-[108px] animate-pulse rounded-xl bg-white/5 sm:h-[120px]" />
+                <div key={i} className="aspect-[3/4] animate-pulse rounded-xl bg-white/5" />
               ))}
             </div>
           ) : listings.length === 0 ? (
@@ -114,7 +114,7 @@ function Index() {
                 : `No ${homeTab === "buy" ? "sale" : "rent"} listings — try All or the other tab.`}
             </p>
           ) : (
-            <div className="mt-3 grid gap-2 sm:mt-6 sm:gap-3 lg:grid-cols-2">
+            <div className="mt-3 grid grid-cols-2 gap-2 sm:mt-6 sm:gap-3 lg:grid-cols-3">
               {listings.map((p) => (
                 <PropertyCard
                   key={p.id}

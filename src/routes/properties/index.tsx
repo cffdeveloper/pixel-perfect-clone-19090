@@ -142,7 +142,7 @@ function PropertiesPage() {
             <p className="mt-6 text-sm text-white/50">
               Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, total)} of {total} properties
             </p>
-            <div className="mt-6 grid gap-3 lg:grid-cols-2">
+            <div className="mt-6 grid grid-cols-2 gap-2 sm:gap-3 lg:grid-cols-3">
               {properties.map((p) => (
                 <PropertyCard key={p.id} p={p} />
               ))}
