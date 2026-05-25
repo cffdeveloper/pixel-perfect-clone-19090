@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useCallback } from "react";
 import { useServerFn } from "@tanstack/react-start";
 import { useQuery } from "@tanstack/react-query";
 import { uploadPropertyImage } from "@/lib/storage.functions";
@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "sonner";
-import { Loader2, MapPin, Upload, X } from "lucide-react";
+import { Loader2, MapPin, Upload, X, GripVertical } from "lucide-react";
 
 export type PropertyFormValues = {
   id?: string;
@@ -383,7 +383,7 @@ export function PropertyForm({
 
       <div className="rounded-xl border border-border p-4">
         <Label className="text-base">Images</Label>
-        <p className="mt-1 text-xs text-muted-foreground">Upload to Supabase storage (max 5MB each, JPEG/PNG/WebP/GIF). First image is used as hero unless set below.</p>
+        <p className="mt-1 text-xs text-muted-foreground">Upload to Supabase storage (max 5MB each, JPEG/PNG/WebP/GIF). Drag images to reorder. First image is used as hero unless set below.</p>
         <label className="mt-3 flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-border py-8 transition hover:bg-muted/50">
           <input
             type="file"
@@ -397,30 +397,16 @@ export function PropertyForm({
           <span className="text-sm">{uploading ? "Uploading…" : "Upload images"}</span>
         </label>
         {images.length > 0 && (
-          <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-4">
-            {images.map((url) => (
-              <div key={url} className="group relative aspect-square overflow-hidden rounded-lg bg-muted">
-                <img src={url} alt="" className="h-full w-full object-cover" />
-                <button
-                  type="button"
-                  className="absolute right-1 top-1 rounded-full bg-black/60 p-1 text-white opacity-0 transition group-hover:opacity-100"
-                  onClick={() => {
-                    setImages((prev) => prev.filter((u) => u !== url));
-                    if (heroImage === url) setHeroImage("");
-                  }}
-                >
-                  <X className="h-3 w-3" />
-                </button>
-                <button
-                  type="button"
-                  className={`absolute bottom-1 left-1 rounded px-1.5 text-[10px] ${heroImage === url ? "bg-[#c6f135] text-black" : "bg-black/50 text-white"}`}
-                  onClick={() => setHeroImage(url)}
-                >
-                  Hero
-                </button>
-              </div>
-            ))}
-          </div>
+          <DraggableImageGrid
+            images={images}
+            heroImage={heroImage}
+            onReorder={setImages}
+            onRemove={(url) => {
+              setImages((prev) => prev.filter((u) => u !== url));
+              if (heroImage === url) setHeroImage("");
+            }}
+            onSetHero={setHeroImage}
+          />
         )}
         <div className="mt-3 space-y-1.5">
           <Label className="text-xs">Hero image URL (optional override)</Label>
@@ -445,6 +431,96 @@ export function PropertyForm({
         </Button>
       </div>
     </form>
+  );
+}
+
+function DraggableImageGrid({
+  images,
+  heroImage,
+  onReorder,
+  onRemove,
+  onSetHero,
+}: {
+  images: string[];
+  heroImage: string;
+  onReorder: (imgs: string[]) => void;
+  onRemove: (url: string) => void;
+  onSetHero: (url: string) => void;
+}) {
+  const dragIdx = useRef<number | null>(null);
+  const [overIdx, setOverIdx] = useState<number | null>(null);
+
+  const handleDragStart = useCallback((idx: number) => {
+    dragIdx.current = idx;
+  }, []);
+
+  const handleDragOver = useCallback((e: React.DragEvent, idx: number) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "move";
+    setOverIdx(idx);
+  }, []);
+
+  const handleDrop = useCallback(
+    (e: React.DragEvent, toIdx: number) => {
+      e.preventDefault();
+      const fromIdx = dragIdx.current;
+      if (fromIdx == null || fromIdx === toIdx) {
+        setOverIdx(null);
+        return;
+      }
+      const next = [...images];
+      const [moved] = next.splice(fromIdx, 1);
+      next.splice(toIdx, 0, moved);
+      onReorder(next);
+      dragIdx.current = null;
+      setOverIdx(null);
+    },
+    [images, onReorder],
+  );
+
+  const handleDragEnd = useCallback(() => {
+    dragIdx.current = null;
+    setOverIdx(null);
+  }, []);
+
+  return (
+    <div className="mt-4 grid grid-cols-3 gap-2 sm:grid-cols-4">
+      {images.map((url, idx) => (
+        <div
+          key={url}
+          draggable
+          onDragStart={() => handleDragStart(idx)}
+          onDragOver={(e) => handleDragOver(e, idx)}
+          onDrop={(e) => handleDrop(e, idx)}
+          onDragEnd={handleDragEnd}
+          className={`group relative aspect-square cursor-grab overflow-hidden rounded-lg bg-muted transition-all duration-200 active:cursor-grabbing ${
+            overIdx === idx ? "scale-95 ring-2 ring-[#c6f135]" : ""
+          } ${dragIdx.current === idx ? "opacity-40" : "opacity-100"}`}
+        >
+          <img src={url} alt="" className="h-full w-full object-cover pointer-events-none" />
+          <div className="absolute left-1 top-1 flex h-6 w-6 items-center justify-center rounded-full bg-black/50 text-white/70 opacity-0 transition group-hover:opacity-100">
+            <GripVertical className="h-3.5 w-3.5" />
+          </div>
+          <span className="absolute left-1/2 top-1 -translate-x-1/2 rounded bg-black/60 px-1.5 py-0.5 text-[9px] font-medium text-white/60">
+            {idx + 1}
+          </span>
+          <button
+            type="button"
+            className="absolute right-1 top-1 rounded-full bg-black/60 p-1 text-white opacity-0 transition group-hover:opacity-100"
+            onClick={() => onRemove(url)}
+          >
+            <X className="h-3 w-3" />
+          </button>
+          <button
+            type="button"
+            className={`absolute bottom-1 left-1 rounded px-1.5 text-[10px] ${heroImage === url ? "bg-[#c6f135] text-black" : "bg-black/50 text-white"}`}
+            onClick={() => onSetHero(url)}
+          >
+            Hero
+          </button>
+        </div>
+      ))}
+    </div>
   );
 }
 
