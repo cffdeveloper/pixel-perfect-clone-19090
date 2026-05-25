@@ -61,7 +61,10 @@ export function SiteFooter() {
               </a>
             </li>
             <li className="inline-flex min-h-[44px] items-center text-white/55">
-              +254 700 861 129
+              +254 702 447 447
+            </li>
+            <li className="inline-flex min-h-[44px] items-center text-white/55">
+              +254 781 310 331
             </li>
           </ul>
         </div>

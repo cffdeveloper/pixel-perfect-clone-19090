@@ -2,8 +2,9 @@ export const BRAND = {
   name: "Offshore Properties",
   tagline: "Real estate made easy and transparent",
   email: "hello@offshoreproperties.com",
-  phone: "+254 700 861 129",
-  whatsapp: "+254700861129",
+  phone: "+254 702 447 447",
+  phone2: "+254 781 310 331",
+  whatsapp: "+254702447447",
 } as const;
 
 export const HERO_IMAGE =
