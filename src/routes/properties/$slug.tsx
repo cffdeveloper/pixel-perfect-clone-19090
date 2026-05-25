@@ -6,7 +6,7 @@ import { getPropertyBySlug, recordPropertyView } from "@/lib/properties.function
 import { SiteLayout } from "@/components/site-layout";
 import { EnquiryForm } from "@/components/enquiry-form";
 import { ViewingForm } from "@/components/viewing-form";
-import { formatPrice, propertyTypeLabel, statusLabel } from "@/lib/format";
+import { formatPrice, formatArea, propertyTypeLabel, statusLabel } from "@/lib/format";
 import { PropertyActions } from "@/components/property-actions";
 import { BRAND } from "@/lib/constants";
 import { Bed, Bath, Maximize, MapPin, ArrowLeft, Map } from "lucide-react";
@@ -137,7 +137,12 @@ function PropertyDetailPage() {
               )}
               {p.area_sqm != null && (
                 <span className="flex items-center gap-2">
-                  <Maximize className="h-4 w-4 text-[#c6f135]" /> {Number(p.area_sqm).toLocaleString()} m²
+                  <Maximize className="h-4 w-4 text-[#c6f135]" /> {formatArea(Number(p.area_sqm), p.property_type)}
+                </span>
+              )}
+              {p.plot_size_sqm != null && Number(p.plot_size_sqm) !== Number(p.area_sqm) && (
+                <span className="flex items-center gap-2">
+                  <Maximize className="h-4 w-4 text-[#c6f135]" /> {formatArea(Number(p.plot_size_sqm), p.property_type)} plot
                 </span>
               )}
             </div>

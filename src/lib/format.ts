@@ -39,10 +39,23 @@ export function listingTypeShort(t: string) {
   return t;
 }
 
-/** Compact area for cards (e.g. 121212 → 121k m²) */
-export function formatArea(sqm: number | null | undefined) {
+const SQM_PER_ACRE = 4046.86;
+
+/** Compact area — shows acres for land, m² for everything else */
+export function formatArea(
+  sqm: number | null | undefined,
+  propertyType?: string | null,
+) {
   if (sqm == null || Number.isNaN(Number(sqm))) return null;
   const n = Number(sqm);
+
+  if (propertyType === "land") {
+    const acres = n / SQM_PER_ACRE;
+    if (acres >= 100) return `${Math.round(acres).toLocaleString()} acres`;
+    if (acres >= 10) return `${acres.toFixed(1).replace(/\.0$/, "")} acres`;
+    return `${acres.toFixed(2).replace(/\.?0+$/, "")} acres`;
+  }
+
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1).replace(/\.0$/, "")}M m²`;
   if (n >= 10_000) return `${Math.round(n / 1000)}k m²`;
   if (n >= 1000) return `${(n / 1000).toFixed(1).replace(/\.0$/, "")}k m²`;

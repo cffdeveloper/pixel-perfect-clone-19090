@@ -53,8 +53,8 @@ function statusTone(status: string) {
 export function PropertyCard({ p }: { p: PropertyCardData }) {
   const img = cardImage(p);
   const location = propertyLocationLine(p);
-  const area = formatArea(p.area_sqm);
-  const plot = formatArea(p.plot_size_sqm);
+  const area = formatArea(p.area_sqm, p.property_type);
+  const plot = formatArea(p.plot_size_sqm, p.property_type);
   const isLand = p.property_type === "land";
   const features = (p.features ?? []).filter(Boolean).slice(0, 3);
   const extraFeatures = (p.features?.length ?? 0) - features.length;

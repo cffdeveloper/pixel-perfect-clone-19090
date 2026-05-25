@@ -282,12 +282,12 @@ export function PropertyForm({
           <Input type="number" min={0} value={bathrooms} onChange={(e) => setBathrooms(e.target.value)} />
         </div>
         <div className="space-y-1.5">
-          <Label>Area (m²)</Label>
-          <Input type="number" min={0} value={areaSqm} onChange={(e) => setAreaSqm(e.target.value)} />
+          <Label>Area (m²){propertyType === "land" ? " — displays as acres" : ""}</Label>
+          <Input type="number" min={0} step="any" value={areaSqm} onChange={(e) => setAreaSqm(e.target.value)} placeholder={propertyType === "land" ? "e.g. 3237 (≈ 0.8 acres)" : ""} />
         </div>
         <div className="space-y-1.5">
-          <Label>Plot size (m²)</Label>
-          <Input type="number" min={0} value={plotSizeSqm} onChange={(e) => setPlotSizeSqm(e.target.value)} />
+          <Label>Plot size (m²){propertyType === "land" ? " — displays as acres" : ""}</Label>
+          <Input type="number" min={0} step="any" value={plotSizeSqm} onChange={(e) => setPlotSizeSqm(e.target.value)} placeholder={propertyType === "land" ? "e.g. 3237 (≈ 0.8 acres)" : ""} />
         </div>
         <div className="space-y-1.5">
           <Label>Year built</Label>
