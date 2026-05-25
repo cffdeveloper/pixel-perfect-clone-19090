@@ -18,10 +18,10 @@ export const Route = createFileRoute("/")({
   validateSearch: (s) => homeSearchSchema.parse(s),
   head: () => ({
     meta: [
-      { title: `${BRAND.name} — Real Estate Made Easy & Transparent` },
+      { title: `${BRAND.name} — Your Next Investment, Simplified` },
       {
         name: "description",
-        content: "Our smart platform simplifies your search, offering handpicked listings.",
+        content: "Explore curated properties — search, filter, and discover handpicked listings.",
       },
     ],
   }),
@@ -49,10 +49,12 @@ function Index() {
     navigate({ search: { tab } });
   }
 
-  const { data: all = [], isLoading } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["properties", "home-all"],
     queryFn: () => fetchProperties({ data: { limit: 48 } }),
   });
+
+  const all = data?.rows ?? [];
 
   const listings = useMemo(() => {
     if (homeTab === "buy") return all.filter((p) => p.listing_type === "sale");
@@ -79,40 +81,40 @@ function Index() {
 
       <HomeTabStrip active={homeTab} onChange={setTab} />
 
-      <section className="px-1.5 pb-6 safe-bottom sm:px-4 sm:pb-10 md:px-5 lg:px-6">
-        <div className="mx-auto max-w-[1440px] rounded-[20px] bg-[#0a0a0a] px-4 py-6 sm:rounded-[40px] sm:px-8 sm:py-12 lg:rounded-[48px] lg:px-10">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between sm:gap-3">
+      <section className="px-1.5 pb-4 safe-bottom sm:px-4 sm:pb-10 md:px-5 lg:px-6">
+        <div className="mx-auto max-w-[1440px] rounded-[20px] bg-[#0a0a0a] px-3 py-4 sm:rounded-[40px] sm:px-8 sm:py-12 lg:rounded-[48px] lg:px-10">
+          <div className="flex items-end justify-between gap-2">
             <div>
-              <p className="text-xs font-medium uppercase tracking-widest text-[#c6f135]">
+              <p className="text-[10px] font-medium uppercase tracking-widest text-[#c6f135] sm:text-xs">
                 {listings.length} {listings.length === 1 ? "property" : "properties"}
               </p>
-              <h2 className="mt-1 text-xl font-bold tracking-tight text-white sm:text-3xl">
+              <h2 className="mt-0.5 text-lg font-bold tracking-tight text-white sm:text-3xl">
                 {sectionTitle}
               </h2>
             </div>
             <Link
               to="/properties"
               search={collectionSearch}
-              className="inline-flex min-h-[44px] items-center text-sm font-medium text-white/60 transition hover:text-[#c6f135]"
+              className="inline-flex items-center text-xs font-medium text-white/60 transition hover:text-[#c6f135] sm:text-sm"
             >
               View full collection →
             </Link>
           </div>
 
           {isLoading ? (
-            <div className="mt-6 grid gap-3 lg:grid-cols-2">
+            <div className="mt-3 grid gap-2 sm:mt-6 sm:gap-3 lg:grid-cols-2">
               {Array.from({ length: 6 }).map((_, i) => (
                 <div key={i} className="h-[108px] animate-pulse rounded-xl bg-white/5 sm:h-[120px]" />
               ))}
             </div>
           ) : listings.length === 0 ? (
-            <p className="mt-8 rounded-2xl border border-dashed border-white/15 py-12 text-center text-sm text-white/50">
+            <p className="mt-4 rounded-2xl border border-dashed border-white/15 py-8 text-center text-sm text-white/50 sm:mt-8 sm:py-12">
               {all.length === 0
                 ? "No published listings yet. Add and publish properties in admin."
                 : `No ${homeTab === "buy" ? "sale" : "rent"} listings — try All or the other tab.`}
             </p>
           ) : (
-            <div className="mt-6 grid gap-3 lg:grid-cols-2">
+            <div className="mt-3 grid gap-2 sm:mt-6 sm:gap-3 lg:grid-cols-2">
               {listings.map((p) => (
                 <PropertyCard
                   key={p.id}

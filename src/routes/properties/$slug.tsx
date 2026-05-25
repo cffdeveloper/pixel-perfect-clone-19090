@@ -8,12 +8,24 @@ import { EnquiryForm } from "@/components/enquiry-form";
 import { ViewingForm } from "@/components/viewing-form";
 import { formatPrice, propertyTypeLabel, statusLabel } from "@/lib/format";
 import { PropertyActions } from "@/components/property-actions";
+import { BRAND } from "@/lib/constants";
 import { Bed, Bath, Maximize, MapPin, ArrowLeft, Map } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export const Route = createFileRoute("/properties/$slug")({
+  head: ({ params }) => {
+    const readable = params.slug
+      .replace(/-/g, " ")
+      .replace(/\b\w/g, (c) => c.toUpperCase());
+    return {
+      meta: [
+        { title: `${readable} | ${BRAND.name}` },
+        { name: "description", content: `${readable} — ${BRAND.tagline}` },
+      ],
+    };
+  },
   component: PropertyDetailPage,
 });
 
@@ -33,7 +45,7 @@ function PropertyDetailPage() {
 
   if (isLoading) {
     return (
-      <SiteLayout>
+      <SiteLayout showFooter={false}>
         <div className="mx-auto max-w-7xl animate-pulse px-4 py-16 sm:px-6">
           <div className="aspect-[16/9] rounded-2xl bg-white/5" />
         </div>
@@ -43,7 +55,7 @@ function PropertyDetailPage() {
 
   if (error || !p) {
     return (
-      <SiteLayout>
+      <SiteLayout showFooter={false}>
         <div className="mx-auto max-w-lg px-4 py-24 text-center">
           <h1 className="text-3xl font-bold text-white">Property not found</h1>
           <Link to="/properties" className="mt-6 inline-flex min-h-[44px] items-center text-[#c6f135]">
@@ -59,11 +71,14 @@ function PropertyDetailPage() {
     name: string;
     email: string;
     phone: string | null;
+    whatsapp: string | null;
     agency: string | null;
   } | null;
 
+  const whatsappNumber = agent?.whatsapp ?? agent?.phone ?? null;
+
   return (
-    <SiteLayout>
+    <SiteLayout showFooter={false}>
       <article>
         {/* Hero image */}
         <div className="relative aspect-[4/3] bg-[#141414] sm:aspect-[21/9]">
@@ -101,10 +116,10 @@ function PropertyDetailPage() {
         {/* Content grid */}
         <div className="mx-auto grid max-w-7xl gap-6 px-4 py-6 safe-bottom sm:gap-8 sm:px-6 sm:py-10 lg:grid-cols-3 lg:gap-12 lg:py-16">
           <div className="lg:col-span-2">
-            <p className="text-3xl font-bold text-[#c6f135] sm:text-4xl">
-              {formatPrice(Number(p.price), p.currency, p.listing_type)}
-            </p>
-            <div className="mt-5">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-3xl font-bold text-[#c6f135] sm:text-4xl">
+                {formatPrice(Number(p.price), p.currency, p.listing_type)}
+              </p>
               <PropertyActions propertyId={p.id} />
             </div>
 
@@ -162,7 +177,7 @@ function PropertyDetailPage() {
             {/* Features */}
             {(p.features?.length ?? 0) > 0 && (
               <ul className="mt-6 flex flex-wrap gap-2 sm:mt-8">
-                {p.features.map((f) => (
+                {p.features.map((f: string) => (
                   <li
                     key={f}
                     className="rounded-full border border-white/15 px-3 py-1.5 text-xs uppercase tracking-wider text-white/70"
@@ -176,8 +191,8 @@ function PropertyDetailPage() {
             {/* Gallery */}
             {images.length > 1 && (
               <div className="mt-8 grid gap-2 sm:mt-10 sm:grid-cols-2 sm:gap-3">
-                {images.slice(1, 5).map((src) => (
-                  <img key={src} src={src} alt="" className="aspect-[4/3] w-full rounded-lg object-cover" loading="lazy" />
+                {images.slice(1, 5).map((src, i) => (
+                  <img key={src} src={src} alt={`${p.title} — photo ${i + 2}`} className="aspect-[4/3] w-full rounded-lg object-cover" loading="lazy" />
                 ))}
               </div>
             )}
@@ -202,10 +217,10 @@ function PropertyDetailPage() {
                   <TabsTrigger value="viewing" className="min-h-[44px]">Viewing</TabsTrigger>
                 </TabsList>
                 <TabsContent value="enquiry" className="mt-5">
-                  <EnquiryForm propertyId={p.id} />
+                  <EnquiryForm propertyId={p.id} propertyTitle={p.title} whatsapp={whatsappNumber} />
                 </TabsContent>
                 <TabsContent value="viewing" className="mt-5">
-                  <ViewingForm propertyId={p.id} />
+                  <ViewingForm propertyId={p.id} propertyTitle={p.title} whatsapp={whatsappNumber} />
                 </TabsContent>
               </Tabs>
             </div>

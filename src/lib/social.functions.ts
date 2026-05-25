@@ -1,10 +1,11 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { supabaseAnonServer } from "@/integrations/supabase/client.anon-server";
 import { requireUserAuth } from "@/integrations/supabase/user-middleware";
 
 export const listPropertiesForMap = createServerFn({ method: "GET" }).handler(async () => {
-  const { data, error } = await supabaseAdmin
+  const { data, error } = await supabaseAnonServer
     .from("properties")
     .select(
       "id, title, slug, property_type, listing_type, price, currency, city, hero_image, latitude, longitude, bedrooms, bathrooms",
@@ -21,8 +22,8 @@ export const getPropertyEngagement = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => z.object({ propertyId: z.string().uuid() }).parse(input))
   .handler(async ({ data }) => {
     const [likes, saves] = await Promise.all([
-      supabaseAdmin.from("property_likes").select("*", { count: "exact", head: true }).eq("property_id", data.propertyId),
-      supabaseAdmin.from("property_saves").select("*", { count: "exact", head: true }).eq("property_id", data.propertyId),
+      supabaseAnonServer.from("property_likes").select("*", { count: "exact", head: true }).eq("property_id", data.propertyId),
+      supabaseAnonServer.from("property_saves").select("*", { count: "exact", head: true }).eq("property_id", data.propertyId),
     ]);
     return {
       likeCount: likes.count ?? 0,
@@ -98,7 +99,7 @@ export const listSavedProperties = createServerFn({ method: "GET" })
     if (!saves?.length) return [];
 
     const ids = saves.map((s) => s.property_id);
-    const { data: properties, error: pErr } = await supabaseAdmin
+    const { data: properties, error: pErr } = await supabaseAnonServer
       .from("properties")
       .select(
         "id, title, slug, property_type, listing_type, status, price, currency, bedrooms, bathrooms, area_sqm, plot_size_sqm, address, city, country, description, features, hero_image, images, is_featured, latitude, longitude, created_at",

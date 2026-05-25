@@ -1,7 +1,9 @@
 import { useState } from "react";
 import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
 import { uploadPropertyImage } from "@/lib/storage.functions";
 import { geocodeAddress } from "@/lib/geocode.functions";
+import { adminListAgents } from "@/lib/properties.functions";
 import { slugify } from "@/lib/format";
 import { getGoogleMapsApiKey, googleMapsConfigError } from "@/lib/google-maps";
 import { PROPERTY_TYPES, LISTING_TYPES } from "@/lib/constants";
@@ -32,6 +34,10 @@ export type PropertyFormValues = {
   bathrooms: number | null;
   area_sqm: number | null;
   plot_size_sqm: number | null;
+  year_built: number | null;
+  furnishing_status: string | null;
+  parking_spaces: number | null;
+  short_let_min_nights: number | null;
   address: string | null;
   city: string | null;
   country: string | null;
@@ -43,9 +49,18 @@ export type PropertyFormValues = {
   hero_image: string | null;
   is_published: boolean;
   is_featured: boolean;
+  agent_id: string | null;
+  available_from: string | null;
 };
 
 type Initial = Partial<PropertyFormValues> & { id?: string };
+
+const FURNISHING_OPTIONS = [
+  { value: "", label: "Not specified" },
+  { value: "furnished", label: "Furnished" },
+  { value: "semi_furnished", label: "Semi-furnished" },
+  { value: "unfurnished", label: "Unfurnished" },
+];
 
 export function PropertyForm({
   initial,
@@ -58,6 +73,12 @@ export function PropertyForm({
 }) {
   const upload = useServerFn(uploadPropertyImage);
   const geocode = useServerFn(geocodeAddress);
+  const fetchAgents = useServerFn(adminListAgents);
+
+  const { data: agents = [] } = useQuery({
+    queryKey: ["admin-agents"],
+    queryFn: () => fetchAgents(),
+  });
 
   const [title, setTitle] = useState(initial?.title ?? "");
   const [slug, setSlug] = useState(initial?.slug ?? "");
@@ -69,6 +90,11 @@ export function PropertyForm({
   const [bedrooms, setBedrooms] = useState(String(initial?.bedrooms ?? ""));
   const [bathrooms, setBathrooms] = useState(String(initial?.bathrooms ?? ""));
   const [areaSqm, setAreaSqm] = useState(String(initial?.area_sqm ?? ""));
+  const [plotSizeSqm, setPlotSizeSqm] = useState(String(initial?.plot_size_sqm ?? ""));
+  const [yearBuilt, setYearBuilt] = useState(String(initial?.year_built ?? ""));
+  const [furnishing, setFurnishing] = useState(initial?.furnishing_status ?? "__none");
+  const [parkingSpaces, setParkingSpaces] = useState(String(initial?.parking_spaces ?? ""));
+  const [shortLetMinNights, setShortLetMinNights] = useState(String(initial?.short_let_min_nights ?? ""));
   const [address, setAddress] = useState(initial?.address ?? "");
   const [city, setCity] = useState(initial?.city ?? "");
   const [country, setCountry] = useState(initial?.country ?? "");
@@ -80,9 +106,13 @@ export function PropertyForm({
   const [heroImage, setHeroImage] = useState(initial?.hero_image ?? "");
   const [isPublished, setIsPublished] = useState(initial?.is_published ?? false);
   const [isFeatured, setIsFeatured] = useState(initial?.is_featured ?? false);
+  const [agentId, setAgentId] = useState(initial?.agent_id ?? "__none");
+  const [availableFrom, setAvailableFrom] = useState(initial?.available_from ?? "");
   const [uploading, setUploading] = useState(false);
   const [geocoding, setGeocoding] = useState(false);
   const [saving, setSaving] = useState(false);
+
+  const showShortLet = listingType === "short_let";
 
   async function handleFiles(files: FileList | null) {
     if (!files?.length) return;
@@ -96,7 +126,7 @@ export function PropertyForm({
         }
         const base64 = await fileToBase64(file);
         const { url } = await upload({
-          data: { fileName: file.name, contentType: file.type, dataBase64: base64 },
+          data: { fileName: file.name, contentType: file.type as "image/jpeg" | "image/png" | "image/webp" | "image/gif", dataBase64: base64 },
         });
         urls.push(url);
       }
@@ -153,7 +183,11 @@ export function PropertyForm({
         bedrooms: bedrooms ? Number(bedrooms) : null,
         bathrooms: bathrooms ? Number(bathrooms) : null,
         area_sqm: areaSqm ? Number(areaSqm) : null,
-        plot_size_sqm: null,
+        plot_size_sqm: plotSizeSqm ? Number(plotSizeSqm) : null,
+        year_built: yearBuilt ? Number(yearBuilt) : null,
+        furnishing_status: furnishing && furnishing !== "__none" ? furnishing : null,
+        parking_spaces: parkingSpaces ? Number(parkingSpaces) : null,
+        short_let_min_nights: shortLetMinNights ? Number(shortLetMinNights) : null,
         address: address || null,
         city: city || null,
         country: country || null,
@@ -165,6 +199,8 @@ export function PropertyForm({
         hero_image: hero,
         is_published: isPublished,
         is_featured: isFeatured,
+        agent_id: agentId && agentId !== "__none" ? agentId : null,
+        available_from: availableFrom || null,
       });
     } finally {
       setSaving(false);
@@ -250,6 +286,37 @@ export function PropertyForm({
           <Input type="number" min={0} value={areaSqm} onChange={(e) => setAreaSqm(e.target.value)} />
         </div>
         <div className="space-y-1.5">
+          <Label>Plot size (m²)</Label>
+          <Input type="number" min={0} value={plotSizeSqm} onChange={(e) => setPlotSizeSqm(e.target.value)} />
+        </div>
+        <div className="space-y-1.5">
+          <Label>Year built</Label>
+          <Input type="number" min={1800} max={2030} value={yearBuilt} onChange={(e) => setYearBuilt(e.target.value)} placeholder="e.g. 2022" />
+        </div>
+        <div className="space-y-1.5">
+          <Label>Furnishing</Label>
+          <Select value={furnishing} onValueChange={setFurnishing}>
+            <SelectTrigger><SelectValue placeholder="Not specified" /></SelectTrigger>
+            <SelectContent>
+              {FURNISHING_OPTIONS.map((o) => (
+                <SelectItem key={o.value || "__none"} value={o.value || "__none"}>
+                  {o.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1.5">
+          <Label>Parking spaces</Label>
+          <Input type="number" min={0} max={20} value={parkingSpaces} onChange={(e) => setParkingSpaces(e.target.value)} />
+        </div>
+        {showShortLet && (
+          <div className="space-y-1.5">
+            <Label>Min. nights (short let)</Label>
+            <Input type="number" min={0} max={365} value={shortLetMinNights} onChange={(e) => setShortLetMinNights(e.target.value)} />
+          </div>
+        )}
+        <div className="space-y-1.5">
           <Label>Status</Label>
           <Select value={status} onValueChange={setStatus}>
             <SelectTrigger><SelectValue /></SelectTrigger>
@@ -259,6 +326,24 @@ export function PropertyForm({
               ))}
             </SelectContent>
           </Select>
+        </div>
+        <div className="space-y-1.5">
+          <Label>Assigned agent</Label>
+          <Select value={agentId} onValueChange={setAgentId}>
+            <SelectTrigger><SelectValue placeholder="No agent" /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="__none">No agent</SelectItem>
+              {agents.map((a) => (
+                <SelectItem key={a.id} value={a.id}>
+                  {a.name}{a.agency ? ` — ${a.agency}` : ""}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="space-y-1.5">
+          <Label>Available from</Label>
+          <Input type="date" value={availableFrom} onChange={(e) => setAvailableFrom(e.target.value)} />
         </div>
       </div>
 
@@ -298,11 +383,11 @@ export function PropertyForm({
 
       <div className="rounded-xl border border-border p-4">
         <Label className="text-base">Images</Label>
-        <p className="mt-1 text-xs text-muted-foreground">Upload to Supabase storage (max 5MB each). First image is used as hero unless set below.</p>
+        <p className="mt-1 text-xs text-muted-foreground">Upload to Supabase storage (max 5MB each, JPEG/PNG/WebP/GIF). First image is used as hero unless set below.</p>
         <label className="mt-3 flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-border py-8 transition hover:bg-muted/50">
           <input
             type="file"
-            accept="image/*"
+            accept="image/jpeg,image/png,image/webp,image/gif"
             multiple
             className="hidden"
             onChange={(e) => handleFiles(e.target.files)}

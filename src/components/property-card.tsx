@@ -86,7 +86,7 @@ export function PropertyCard({ p }: { p: PropertyCardData }) {
         {img ? (
           <img
             src={img}
-            alt=""
+            alt={p.title}
             loading="lazy"
             className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
           />

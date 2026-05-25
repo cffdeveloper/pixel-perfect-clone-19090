@@ -33,5 +33,5 @@ export function consumeAuthReturnPath(): string {
   if (typeof window === "undefined") return "/";
   const path = sessionStorage.getItem("auth_return_to") || "/";
   sessionStorage.removeItem("auth_return_to");
-  return path.startsWith("/") ? path : "/";
+  return path.startsWith("/") && !path.startsWith("//") ? path : "/";
 }

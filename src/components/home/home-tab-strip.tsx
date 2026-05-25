@@ -15,9 +15,9 @@ export function HomeTabStrip({
   onChange: (tab: HomeTab) => void;
 }) {
   return (
-    <div className="px-3 pt-3 md:hidden">
+    <div className="relative z-10 -mt-1 px-2 pb-1 md:hidden">
       <div
-        className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        className="flex gap-1.5 overflow-x-auto [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         role="tablist"
         aria-label="Listing type"
       >
@@ -29,7 +29,7 @@ export function HomeTabStrip({
             aria-selected={active === tab.id}
             onClick={() => onChange(tab.id)}
             className={cn(
-              "shrink-0 rounded-full px-5 py-2.5 text-sm font-medium transition min-h-[44px]",
+              "shrink-0 rounded-full px-4 py-1.5 text-xs font-medium transition",
               active === tab.id
                 ? "bg-[#c6f135] text-[#0a0a0a]"
                 : "bg-[#141414] text-white/80 ring-1 ring-white/10",

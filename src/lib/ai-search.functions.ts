@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
-import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { supabaseAnonServer } from "@/integrations/supabase/client.anon-server";
+import { rateLimit } from "@/lib/rate-limit";
 
 const Schema = z.object({
   query: z.string().min(1).max(500),
@@ -14,10 +15,12 @@ const Schema = z.object({
 export const aiSearch = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => Schema.parse(input))
   .handler(async ({ data }) => {
+    rateLimit("ai-search", 10, 60_000);
+
     const key = process.env.LOVABLE_API_KEY;
     if (!key) throw new Error("AI is not configured");
 
-    const { data: rows, error } = await supabaseAdmin
+    const { data: rows, error } = await supabaseAnonServer
       .from("properties")
       .select("id, slug, title, property_type, listing_type, price, currency, bedrooms, bathrooms, area_sqm, city, country, features, description")
       .eq("is_published", true)
@@ -70,7 +73,7 @@ export const aiSearch = createServerFn({ method: "POST" })
 
     let matches: Array<{ id: string; slug: string | null; title: string; hero_image: string | null; city: string | null; price: number; currency: string; listing_type: string }> = [];
     if (slugs.length) {
-      const { data: m } = await supabaseAdmin
+      const { data: m } = await supabaseAnonServer
         .from("properties")
         .select("id, slug, title, hero_image, city, price, currency, listing_type")
         .in("slug", slugs)

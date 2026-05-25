@@ -9,7 +9,7 @@ export function SiteFooter() {
             Offshore<span className="text-[#c6f135]">.</span>
           </div>
           <p className="mt-3 max-w-xs text-sm leading-relaxed text-white/55">
-            Real estate made easy and transparent — curated listings across the coast.
+            Real estate made easy and transparent — curated listings, trusted advisors.
           </p>
         </div>
         <div>
@@ -61,7 +61,7 @@ export function SiteFooter() {
               </a>
             </li>
             <li className="inline-flex min-h-[44px] items-center text-white/55">
-              +1 (555) 010-0000
+              +254 700 861 129
             </li>
           </ul>
         </div>

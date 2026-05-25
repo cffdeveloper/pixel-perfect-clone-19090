@@ -7,12 +7,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { BRAND } from "@/lib/constants";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
 export function EnquiryForm({
   propertyId,
+  propertyTitle,
+  whatsapp,
   source = "enquiry",
 }: {
   propertyId?: string;
+  propertyTitle?: string;
+  whatsapp?: string | null;
   source?: "enquiry" | "contact";
 }) {
   const submit = useServerFn(createLead);
@@ -20,21 +26,43 @@ export function EnquiryForm({
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const fd = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+
+    const name = String(fd.get("name")).trim();
+    const email = String(fd.get("email")).trim();
+    const phone = (fd.get("phone") as string)?.trim() || null;
+    const message = (fd.get("message") as string)?.trim() || null;
+
     setLoading(true);
     try {
       await submit({
         data: {
-          client_name: String(fd.get("name")),
-          client_email: String(fd.get("email")),
-          client_phone: (fd.get("phone") as string) || null,
-          message: (fd.get("message") as string) || null,
+          client_name: name,
+          client_email: email,
+          client_phone: phone,
+          message,
           source,
           property_id: propertyId ?? null,
         },
       });
-      toast.success("Thank you — an advisor will be in touch shortly.");
-      e.currentTarget.reset();
+
+      const lines = [
+        `Hello, I'd like to enquire about a property on ${BRAND.name}.`,
+        "",
+        propertyTitle ? `*Property:* ${propertyTitle}` : null,
+        `*Name:* ${name}`,
+        `*Email:* ${email}`,
+        phone ? `*Phone:* ${phone}` : null,
+        message ? `\n*Message:*\n${message}` : null,
+        "",
+        "Looking forward to hearing from you!",
+      ];
+
+      const wa = buildWhatsAppUrl(whatsapp, lines);
+      window.open(wa, "_blank", "noopener");
+      toast.success("Enquiry sent — redirecting you to WhatsApp.");
+      form.reset();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not send enquiry");
     } finally {

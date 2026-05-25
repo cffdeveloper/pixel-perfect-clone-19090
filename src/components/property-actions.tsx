@@ -2,7 +2,6 @@ import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Heart, Bookmark } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/use-auth";
 import { toggleLike, toggleSave, getMyEngagement, getPropertyEngagement } from "@/lib/social.functions";
 import { AuthDialog } from "@/components/auth/auth-dialog";
@@ -32,23 +31,54 @@ export function PropertyActions({ propertyId }: { propertyId: string }) {
 
   const likeMut = useMutation({
     mutationFn: () => likeFn({ data: { propertyId } }),
-    onSuccess: (r) => {
+    onMutate: async () => {
+      await qc.cancelQueries({ queryKey: ["my-engagement", propertyId] });
+      await qc.cancelQueries({ queryKey: ["engagement", propertyId] });
+      const prevMine = qc.getQueryData(["my-engagement", propertyId, user?.id]);
+      const prevCounts = qc.getQueryData(["engagement", propertyId]);
+      const wasLiked = (prevMine as { liked?: boolean } | undefined)?.liked ?? false;
+      qc.setQueryData(["my-engagement", propertyId, user?.id], (old: unknown) => ({
+        ...(old as object),
+        liked: !wasLiked,
+      }));
+      qc.setQueryData(["engagement", propertyId], (old: unknown) => ({
+        ...(old as object),
+        likeCount: ((old as { likeCount?: number } | undefined)?.likeCount ?? 0) + (wasLiked ? -1 : 1),
+      }));
+      return { prevMine, prevCounts };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.prevMine) qc.setQueryData(["my-engagement", propertyId, user?.id], context.prevMine);
+      if (context?.prevCounts) qc.setQueryData(["engagement", propertyId], context.prevCounts);
+      toast.error("Could not update like");
+    },
+    onSettled: () => {
       qc.invalidateQueries({ queryKey: ["engagement", propertyId] });
       qc.invalidateQueries({ queryKey: ["my-engagement", propertyId] });
-      toast.success(r.liked ? "Added to likes" : "Removed from likes");
     },
-    onError: (e) => toast.error(e.message),
   });
 
   const saveMut = useMutation({
     mutationFn: () => saveFn({ data: { propertyId } }),
-    onSuccess: (r) => {
+    onMutate: async () => {
+      await qc.cancelQueries({ queryKey: ["my-engagement", propertyId] });
+      const prevMine = qc.getQueryData(["my-engagement", propertyId, user?.id]);
+      const wasSaved = (prevMine as { saved?: boolean } | undefined)?.saved ?? false;
+      qc.setQueryData(["my-engagement", propertyId, user?.id], (old: unknown) => ({
+        ...(old as object),
+        saved: !wasSaved,
+      }));
+      return { prevMine };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.prevMine) qc.setQueryData(["my-engagement", propertyId, user?.id], context.prevMine);
+      toast.error("Could not update save");
+    },
+    onSettled: () => {
       qc.invalidateQueries({ queryKey: ["engagement", propertyId] });
       qc.invalidateQueries({ queryKey: ["my-engagement", propertyId] });
       qc.invalidateQueries({ queryKey: ["saved-properties"] });
-      toast.success(r.saved ? "Saved to your list" : "Removed from saved");
     },
-    onError: (e) => toast.error(e.message),
   });
 
   function requireAuth(action: () => void) {
@@ -60,40 +90,39 @@ export function PropertyActions({ propertyId }: { propertyId: string }) {
     action();
   }
 
+  const likeCount = counts?.likeCount ?? 0;
+
   return (
     <>
-      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
-        <Button
+      <div className="flex items-center gap-1">
+        <button
           type="button"
-          variant="outline"
-          size="sm"
           className={cn(
-            "h-11 w-full gap-2 rounded-full border-white/15 text-white hover:bg-white/10 sm:h-9 sm:w-auto",
-            mine?.liked && "border-red-400/50 bg-red-500/10 text-red-400",
+            "flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium transition active:scale-95 sm:px-3 sm:py-1.5 sm:text-xs",
+            mine?.liked
+              ? "bg-red-500/15 text-red-400"
+              : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white/80",
           )}
           disabled={authLoading || likeMut.isPending}
           onClick={() => requireAuth(() => likeMut.mutate())}
         >
-          <Heart className={cn("h-4 w-4", mine?.liked && "fill-current")} />
-          Like {counts?.likeCount != null && counts.likeCount > 0 ? `(${counts.likeCount})` : ""}
-        </Button>
-        <Button
+          <Heart className={cn("h-3 w-3 sm:h-3.5 sm:w-3.5", mine?.liked && "fill-current")} />
+          {likeCount > 0 ? likeCount : "Like"}
+        </button>
+        <button
           type="button"
-          variant="outline"
-          size="sm"
           className={cn(
-            "h-11 w-full gap-2 rounded-full border-white/15 text-white hover:bg-white/10 sm:h-9 sm:w-auto",
-            mine?.saved && "border-[#c6f135] bg-[#c6f135]/15 text-[#c6f135]",
+            "flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-medium transition active:scale-95 sm:px-3 sm:py-1.5 sm:text-xs",
+            mine?.saved
+              ? "bg-[#c6f135]/15 text-[#c6f135]"
+              : "bg-white/5 text-white/50 hover:bg-white/10 hover:text-white/80",
           )}
           disabled={authLoading || saveMut.isPending}
           onClick={() => requireAuth(() => saveMut.mutate())}
         >
-          <Bookmark className={cn("h-4 w-4", mine?.saved && "fill-current")} />
+          <Bookmark className={cn("h-3 w-3 sm:h-3.5 sm:w-3.5", mine?.saved && "fill-current")} />
           Save
-        </Button>
-        {!user && (
-          <span className="text-xs text-white/45">Sign up free to like & save</span>
-        )}
+        </button>
       </div>
       <AuthDialog open={authOpen} onOpenChange={setAuthOpen} mode={authMode} onModeChange={setAuthMode} />
     </>

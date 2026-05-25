@@ -7,7 +7,7 @@ export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
       { title: `About — ${BRAND.name}` },
-      { name: "description", content: "Our philosophy of curated coastal real estate." },
+      { name: "description", content: "Our philosophy — real estate made easy and transparent." },
     ],
   }),
   component: AboutPage,
@@ -24,7 +24,7 @@ function AboutPage() {
             <SectionHeading
               eyebrow="Our story"
               title="Perspective over volume"
-              description="Offshore Properties was founded on a simple belief: the finest coastal homes are discovered, not scrolled past."
+              description="Offshore Properties was founded on a simple belief: the finest homes are discovered, not scrolled past."
             />
           </div>
         </div>
@@ -33,8 +33,8 @@ function AboutPage() {
       <section className="page-panel mt-4 sm:mt-6">
         <div className="mx-auto max-w-3xl space-y-5 text-[15px] leading-relaxed text-white/60 sm:space-y-6 sm:text-base">
           <p>
-            We represent a deliberately small portfolio of villas, apartments, and land along the
-            world&apos;s most desirable coastlines. Each instruction is handled with discretion —
+            We represent a deliberately curated portfolio of villas, apartments, and land across
+            prime locations. Each instruction is handled with discretion —
             from first enquiry through completion.
           </p>
           <p>

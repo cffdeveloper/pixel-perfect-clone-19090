@@ -3,13 +3,20 @@ import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { requireAdminAuth } from "@/integrations/supabase/admin-middleware";
 
+const ALLOWED_MIME_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+] as const;
+
 export const uploadPropertyImage = createServerFn({ method: "POST" })
   .middleware([requireAdminAuth])
   .inputValidator((input: unknown) =>
     z
       .object({
         fileName: z.string().min(1).max(200),
-        contentType: z.string().min(3).max(100),
+        contentType: z.enum(ALLOWED_MIME_TYPES),
         dataBase64: z.string().min(1).max(15_000_000),
       })
       .parse(input),

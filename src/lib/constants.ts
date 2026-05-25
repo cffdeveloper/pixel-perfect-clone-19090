@@ -1,8 +1,9 @@
 export const BRAND = {
   name: "Offshore Properties",
-  tagline: "Curated coastal real estate",
+  tagline: "Real estate made easy and transparent",
   email: "hello@offshoreproperties.com",
-  phone: "+1 (555) 010-0000",
+  phone: "+254 700 861 129",
+  whatsapp: "+254700861129",
 } as const;
 
 export const HERO_IMAGE =

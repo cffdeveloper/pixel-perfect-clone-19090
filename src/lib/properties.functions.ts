@@ -1,7 +1,14 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
+import { supabaseAnonServer } from "@/integrations/supabase/client.anon-server";
 import { requireAdminAuth } from "@/integrations/supabase/admin-middleware";
+import { rateLimit } from "@/lib/rate-limit";
+
+/** Strip PostgREST filter operators from user input */
+function sanitizeFilter(value: string): string {
+  return value.replace(/[.,()]/g, "");
+}
 
 const FilterSchema = z.object({
   query: z.string().max(200).optional(),
@@ -13,6 +20,7 @@ const FilterSchema = z.object({
   bathrooms: z.number().int().min(0).max(20).optional(),
   city: z.string().max(100).optional(),
   limit: z.number().int().min(1).max(100).optional(),
+  offset: z.number().int().min(0).optional(),
   featuredOnly: z.boolean().optional(),
 });
 
@@ -21,15 +29,19 @@ export type PropertyFilters = z.infer<typeof FilterSchema>;
 export const listProperties = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => FilterSchema.parse(input ?? {}))
   .handler(async ({ data }) => {
-    let q = supabaseAdmin
+    const limit = data.limit ?? 60;
+    const offset = data.offset ?? 0;
+
+    let q = supabaseAnonServer
       .from("properties")
       .select(
         "id, title, slug, property_type, listing_type, status, price, currency, bedrooms, bathrooms, area_sqm, plot_size_sqm, address, city, country, description, features, hero_image, images, is_featured, latitude, longitude, created_at",
+        { count: "exact" },
       )
       .eq("is_published", true)
       .order("is_featured", { ascending: false })
       .order("created_at", { ascending: false })
-      .limit(data.limit ?? 60);
+      .range(offset, offset + limit - 1);
 
     if (data.propertyType && data.propertyType !== "any") q = q.eq("property_type", data.propertyType);
     if (data.listingType && data.listingType !== "any") q = q.eq("listing_type", data.listingType);
@@ -37,19 +49,22 @@ export const listProperties = createServerFn({ method: "POST" })
     if (data.maxPrice != null) q = q.lte("price", data.maxPrice);
     if (data.bedrooms != null) q = q.gte("bedrooms", data.bedrooms);
     if (data.bathrooms != null) q = q.gte("bathrooms", data.bathrooms);
-    if (data.city) q = q.ilike("city", `%${data.city}%`);
+    if (data.city) q = q.ilike("city", `%${sanitizeFilter(data.city)}%`);
     if (data.featuredOnly) q = q.eq("is_featured", true);
-    if (data.query) q = q.or(`title.ilike.%${data.query}%,description.ilike.%${data.query}%,city.ilike.%${data.query}%`);
+    if (data.query) {
+      const sq = sanitizeFilter(data.query);
+      q = q.or(`title.ilike.%${sq}%,description.ilike.%${sq}%,city.ilike.%${sq}%`);
+    }
 
-    const { data: rows, error } = await q;
+    const { data: rows, error, count } = await q;
     if (error) throw error;
-    return rows ?? [];
+    return { rows: rows ?? [], total: count ?? 0 };
   });
 
 export const getPropertyBySlug = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => z.object({ slug: z.string().max(120) }).parse(input))
   .handler(async ({ data }) => {
-    const { data: row, error } = await supabaseAdmin
+    const { data: row, error } = await supabaseAnonServer
       .from("properties")
       .select("*, agents(id, name, email, phone, whatsapp, agency, bio, photo_url)")
       .eq("slug", data.slug)
@@ -62,7 +77,8 @@ export const getPropertyBySlug = createServerFn({ method: "POST" })
 export const recordPropertyView = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => z.object({ propertyId: z.string().uuid() }).parse(input))
   .handler(async ({ data }) => {
-    await supabaseAdmin.from("property_views").insert({ property_id: data.propertyId });
+    rateLimit("view", 30, 60_000);
+    await supabaseAnonServer.from("property_views").insert({ property_id: data.propertyId });
     return { ok: true };
   });
 
@@ -78,8 +94,9 @@ const LeadSchema = z.object({
 export const createLead = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => LeadSchema.parse(input))
   .handler(async ({ data }) => {
-    const { error } = await supabaseAdmin.from("leads").insert(data);
-    if (error) throw new Error(error.message);
+    rateLimit("lead", 5, 60_000);
+    const { error } = await supabaseAnonServer.from("leads").insert(data);
+    if (error) throw new Error("Could not submit enquiry. Please try again.");
     return { ok: true };
   });
 
@@ -95,11 +112,12 @@ const BookingSchema = z.object({
 export const createBooking = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => BookingSchema.parse(input))
   .handler(async ({ data }) => {
-    const { error } = await supabaseAdmin.from("bookings").insert({
+    rateLimit("booking", 5, 60_000);
+    const { error } = await supabaseAnonServer.from("bookings").insert({
       ...data,
       requested_at: new Date(data.requested_at).toISOString(),
     });
-    if (error) throw new Error(error.message);
+    if (error) throw new Error("Could not submit booking. Please try again.");
     return { ok: true };
   });
 
@@ -154,7 +172,19 @@ const PropertyInputSchema = z.object({
   is_published: z.boolean().default(false),
   is_featured: z.boolean().default(false),
   agent_id: z.string().uuid().nullable().optional(),
+  available_from: z.string().max(20).nullable().optional(),
 });
+
+export const adminListAgents = createServerFn({ method: "GET" })
+  .middleware([requireAdminAuth])
+  .handler(async () => {
+    const { data, error } = await supabaseAdmin
+      .from("agents")
+      .select("id, name, agency")
+      .order("name");
+    if (error) throw error;
+    return data ?? [];
+  });
 
 export const upsertProperty = createServerFn({ method: "POST" })
   .middleware([requireAdminAuth])

@@ -1,5 +1,16 @@
 import { createMiddleware } from "@tanstack/react-start";
 import { getRequest } from "@tanstack/react-start/server";
+import { timingSafeEqual } from "node:crypto";
+
+function safeEqual(a: string, b: string): boolean {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  if (bufA.length !== bufB.length) {
+    timingSafeEqual(bufA, bufA);
+    return false;
+  }
+  return timingSafeEqual(bufA, bufB);
+}
 
 export const requireAdminAuth = createMiddleware({ type: "function" }).server(
   async ({ next }) => {
@@ -19,7 +30,7 @@ export const requireAdminAuth = createMiddleware({ type: "function" }).server(
     }
 
     const token = authHeader.replace("Bearer ", "");
-    if (token !== adminPassword) {
+    if (!safeEqual(token, adminPassword)) {
       throw new Error("Unauthorized: Invalid admin credentials");
     }
 

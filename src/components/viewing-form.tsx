@@ -7,35 +7,82 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
+import { BRAND } from "@/lib/constants";
+import { buildWhatsAppUrl } from "@/lib/whatsapp";
 
-export function ViewingForm({ propertyId }: { propertyId: string }) {
+export function ViewingForm({
+  propertyId,
+  propertyTitle,
+  whatsapp,
+}: {
+  propertyId: string;
+  propertyTitle?: string;
+  whatsapp?: string | null;
+}) {
   const submit = useServerFn(createBooking);
   const [loading, setLoading] = useState(false);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const fd = new FormData(e.currentTarget);
+    const form = e.currentTarget;
+    const fd = new FormData(form);
+
+    const name = String(fd.get("name")).trim();
+    const email = String(fd.get("email")).trim();
+    const phone = (fd.get("phone") as string)?.trim() || null;
     const date = String(fd.get("date"));
     const time = String(fd.get("time"));
+    const notes = (fd.get("notes") as string)?.trim() || null;
+
     const requested = new Date(`${date}T${time}`);
     if (requested.getTime() <= Date.now()) {
       toast.error("Please choose a future date and time.");
       return;
     }
+
     setLoading(true);
     try {
       await submit({
         data: {
-          client_name: String(fd.get("name")),
-          client_email: String(fd.get("email")),
-          client_phone: (fd.get("phone") as string) || null,
+          client_name: name,
+          client_email: email,
+          client_phone: phone,
           property_id: propertyId,
           requested_at: requested.toISOString(),
-          notes: (fd.get("notes") as string) || null,
+          notes,
         },
       });
-      toast.success("Viewing request received. We'll confirm by email.");
-      e.currentTarget.reset();
+
+      const formattedDate = requested.toLocaleDateString("en-GB", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      });
+      const formattedTime = requested.toLocaleTimeString("en-GB", {
+        hour: "2-digit",
+        minute: "2-digit",
+      });
+
+      const lines = [
+        `Hello, I'd like to schedule a viewing via ${BRAND.name}.`,
+        "",
+        propertyTitle ? `*Property:* ${propertyTitle}` : null,
+        `*Preferred Date:* ${formattedDate}`,
+        `*Preferred Time:* ${formattedTime}`,
+        "",
+        `*Name:* ${name}`,
+        `*Email:* ${email}`,
+        phone ? `*Phone:* ${phone}` : null,
+        notes ? `\n*Notes:*\n${notes}` : null,
+        "",
+        "Please confirm the viewing at your earliest convenience. Thank you!",
+      ];
+
+      const wa = buildWhatsAppUrl(whatsapp, lines);
+      window.open(wa, "_blank", "noopener");
+      toast.success("Viewing request sent — redirecting you to WhatsApp.");
+      form.reset();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Could not schedule viewing");
     } finally {

@@ -105,6 +105,18 @@
     overflow-x: hidden;
   }
 
+  /* Hide scrollbar on mobile for a cleaner look */
+  @media (max-width: 639px) {
+    html,
+    body {
+      scrollbar-width: none;
+    }
+    html::-webkit-scrollbar,
+    body::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
   html {
     -webkit-tap-highlight-color: transparent;
     -webkit-text-size-adjust: 100%;

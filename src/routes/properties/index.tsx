@@ -8,9 +8,11 @@ import { PropertyFilters, type PropertySearch } from "@/components/property-filt
 import { SectionHeading } from "@/components/section-heading";
 import { BRAND } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
-import { Map } from "lucide-react";
+import { Map, Loader2 } from "lucide-react";
 import { AiSearchField } from "@/components/ai-search-field";
 import { z } from "zod";
+
+const PAGE_SIZE = 24;
 
 const searchSchema = z.object({
   q: z.string().optional(),
@@ -19,6 +21,7 @@ const searchSchema = z.object({
   city: z.string().optional(),
   maxPrice: z.string().optional(),
   ai: z.string().optional(),
+  page: z.coerce.number().int().min(1).optional(),
 });
 
 export const Route = createFileRoute("/properties/")({
@@ -26,7 +29,7 @@ export const Route = createFileRoute("/properties/")({
   head: () => ({
     meta: [
       { title: `Collection — ${BRAND.name}` },
-      { name: "description", content: "Browse curated coastal villas, apartments, and land." },
+      { name: "description", content: "Browse curated villas, apartments, townhouses, and land." },
     ],
   }),
   component: PropertiesPage,
@@ -37,6 +40,8 @@ function PropertiesPage() {
   const navigate = Route.useNavigate();
   const fetch = useServerFn(listProperties);
 
+  const page = search.page ?? 1;
+
   const filters = {
     query: search.q,
     propertyType: search.propertyType,
@@ -45,8 +50,8 @@ function PropertiesPage() {
     maxPrice: search.maxPrice ? Number(search.maxPrice) : undefined,
   };
 
-  const { data: properties = [], isLoading } = useQuery({
-    queryKey: ["properties", filters],
+  const { data, isLoading } = useQuery({
+    queryKey: ["properties", filters, page],
     queryFn: () =>
       fetch({
         data: {
@@ -55,17 +60,27 @@ function PropertiesPage() {
           listingType: filters.listingType,
           city: filters.city,
           maxPrice: filters.maxPrice,
-          limit: 60,
+          limit: PAGE_SIZE,
+          offset: (page - 1) * PAGE_SIZE,
         },
       }),
   });
 
+  const properties = data?.rows ?? [];
+  const total = data?.total ?? 0;
+  const totalPages = Math.ceil(total / PAGE_SIZE);
+
   function setSearch(patch: Partial<PropertySearch>) {
-    navigate({ search: (prev) => ({ ...prev, ...patch }) });
+    navigate({ search: (prev) => ({ ...prev, ...patch, page: undefined }) });
   }
 
   function reset() {
     navigate({ search: {} });
+  }
+
+  function goToPage(p: number) {
+    navigate({ search: (prev) => ({ ...prev, page: p > 1 ? p : undefined }) });
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
   const values: PropertySearch = {
@@ -81,7 +96,7 @@ function PropertiesPage() {
         <div className="mx-auto flex max-w-7xl flex-col gap-4 sm:flex-row sm:items-end sm:justify-between sm:gap-6">
           <SectionHeading
             eyebrow="The collection"
-            title="Coastal properties"
+            title="Our properties"
             description="Every listing is vetted for location, craft, and long-term value."
           />
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
@@ -107,10 +122,8 @@ function PropertiesPage() {
           </p>
         )}
         {isLoading ? (
-          <div className="mt-8 grid gap-3 lg:grid-cols-2">
-            {Array.from({ length: 6 }).map((_, i) => (
-              <div key={i} className="h-[108px] animate-pulse rounded-xl bg-white/5 sm:h-[120px]" />
-            ))}
+          <div className="mt-8 flex items-center justify-center py-12">
+            <Loader2 className="h-6 w-6 animate-spin text-[#c6f135]" />
           </div>
         ) : properties.length === 0 ? (
           <div className="mt-10 rounded-2xl border border-dashed border-white/15 px-4 py-10 text-center sm:mt-16 sm:p-16">
@@ -126,12 +139,41 @@ function PropertiesPage() {
           </div>
         ) : (
           <>
-            <p className="mt-6 text-sm text-white/50">{properties.length} properties</p>
+            <p className="mt-6 text-sm text-white/50">
+              Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, total)} of {total} properties
+            </p>
             <div className="mt-6 grid gap-3 lg:grid-cols-2">
               {properties.map((p) => (
                 <PropertyCard key={p.id} p={p} />
               ))}
             </div>
+
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="mt-8 flex items-center justify-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={page <= 1}
+                  onClick={() => goToPage(page - 1)}
+                  className="rounded-full border-white/15 text-white hover:bg-white/10 disabled:opacity-30"
+                >
+                  Previous
+                </Button>
+                <span className="px-3 text-sm text-white/50">
+                  Page {page} of {totalPages}
+                </span>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={page >= totalPages}
+                  onClick={() => goToPage(page + 1)}
+                  className="rounded-full border-white/15 text-white hover:bg-white/10 disabled:opacity-30"
+                >
+                  Next
+                </Button>
+              </div>
+            )}
           </>
         )}
       </section>
