@@ -89,8 +89,18 @@ export function PropertyForm({
   const [currency, setCurrency] = useState(initial?.currency ?? "USD");
   const [bedrooms, setBedrooms] = useState(String(initial?.bedrooms ?? ""));
   const [bathrooms, setBathrooms] = useState(String(initial?.bathrooms ?? ""));
-  const [areaSqm, setAreaSqm] = useState(String(initial?.area_sqm ?? ""));
-  const [plotSizeSqm, setPlotSizeSqm] = useState(String(initial?.plot_size_sqm ?? ""));
+  const sqmToAcres = (sqm: number) => sqm / 4046.86;
+  const acresToSqm = (acres: number) => acres * 4046.86;
+
+  const initArea = initial?.area_sqm != null && initial.property_type === "land"
+    ? String(parseFloat(sqmToAcres(Number(initial.area_sqm)).toFixed(4)))
+    : String(initial?.area_sqm ?? "");
+  const initPlot = initial?.plot_size_sqm != null && initial.property_type === "land"
+    ? String(parseFloat(sqmToAcres(Number(initial.plot_size_sqm)).toFixed(4)))
+    : String(initial?.plot_size_sqm ?? "");
+
+  const [areaSqm, setAreaSqm] = useState(initArea);
+  const [plotSizeSqm, setPlotSizeSqm] = useState(initPlot);
   const [yearBuilt, setYearBuilt] = useState(String(initial?.year_built ?? ""));
   const [furnishing, setFurnishing] = useState(initial?.furnishing_status ?? "__none");
   const [parkingSpaces, setParkingSpaces] = useState(String(initial?.parking_spaces ?? ""));
@@ -182,8 +192,8 @@ export function PropertyForm({
         currency,
         bedrooms: bedrooms ? Number(bedrooms) : null,
         bathrooms: bathrooms ? Number(bathrooms) : null,
-        area_sqm: areaSqm ? Number(areaSqm) : null,
-        plot_size_sqm: plotSizeSqm ? Number(plotSizeSqm) : null,
+        area_sqm: areaSqm ? (propertyType === "land" ? acresToSqm(Number(areaSqm)) : Number(areaSqm)) : null,
+        plot_size_sqm: plotSizeSqm ? (propertyType === "land" ? acresToSqm(Number(plotSizeSqm)) : Number(plotSizeSqm)) : null,
         year_built: yearBuilt ? Number(yearBuilt) : null,
         furnishing_status: furnishing && furnishing !== "__none" ? furnishing : null,
         parking_spaces: parkingSpaces ? Number(parkingSpaces) : null,
@@ -282,12 +292,12 @@ export function PropertyForm({
           <Input type="number" min={0} value={bathrooms} onChange={(e) => setBathrooms(e.target.value)} />
         </div>
         <div className="space-y-1.5">
-          <Label>Area (m²){propertyType === "land" ? " — displays as acres" : ""}</Label>
-          <Input type="number" min={0} step="any" value={areaSqm} onChange={(e) => setAreaSqm(e.target.value)} placeholder={propertyType === "land" ? "e.g. 3237 (≈ 0.8 acres)" : ""} />
+          <Label>{propertyType === "land" ? "Area (acres)" : "Area (m²)"}</Label>
+          <Input type="number" min={0} step="any" value={areaSqm} onChange={(e) => setAreaSqm(e.target.value)} placeholder={propertyType === "land" ? "e.g. 0.8" : ""} />
         </div>
         <div className="space-y-1.5">
-          <Label>Plot size (m²){propertyType === "land" ? " — displays as acres" : ""}</Label>
-          <Input type="number" min={0} step="any" value={plotSizeSqm} onChange={(e) => setPlotSizeSqm(e.target.value)} placeholder={propertyType === "land" ? "e.g. 3237 (≈ 0.8 acres)" : ""} />
+          <Label>{propertyType === "land" ? "Plot size (acres)" : "Plot size (m²)"}</Label>
+          <Input type="number" min={0} step="any" value={plotSizeSqm} onChange={(e) => setPlotSizeSqm(e.target.value)} placeholder={propertyType === "land" ? "e.g. 0.8" : ""} />
         </div>
         <div className="space-y-1.5">
           <Label>Year built</Label>
