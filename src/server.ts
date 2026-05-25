@@ -24,8 +24,9 @@ const CSP = [
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "img-src 'self' https: data: blob:",
   "font-src 'self' https://fonts.gstatic.com",
-  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://ai.gateway.lovable.dev https://maps.googleapis.com",
+  "connect-src 'self' https://*.supabase.co wss://*.supabase.co https://ai.gateway.lovable.dev https://*.googleapis.com",
   "frame-src https://www.google.com https://maps.google.com",
+  "worker-src 'self' blob:",
   "object-src 'none'",
   "base-uri 'self'",
 ].join("; ");
